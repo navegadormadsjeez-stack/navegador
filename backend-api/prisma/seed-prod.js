@@ -70,7 +70,8 @@ async function main() {
       title: 'Madsjeez Seller Browser v0.1.7',
       description:
         'Actualización in-place: reinstalar el setup sobre la versión existente. Buscar/instalar actualizaciones desde Ajustes.',
-      downloadUrl: 'https://files.catbox.moe/nifm3p.zip',
+      downloadUrl:
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.7/MadsjeezSellerBrowserSetup.exe',
       checksum: 'sha256:8c44c37fc7e0cfee432b71b8f7c0e05c59aa4ee337e73e5f6681dd93d60173af',
       fileSize: BigInt(155414269),
       channel: 'STABLE',
@@ -80,7 +81,8 @@ async function main() {
       title: 'Madsjeez Seller Browser v0.1.7',
       description:
         'Actualización in-place: reinstalar el setup sobre la versión existente. Buscar/instalar actualizaciones desde Ajustes.',
-      downloadUrl: 'https://files.catbox.moe/nifm3p.zip',
+      downloadUrl:
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.7/MadsjeezSellerBrowserSetup.exe',
       checksum: 'sha256:8c44c37fc7e0cfee432b71b8f7c0e05c59aa4ee337e73e5f6681dd93d60173af',
       fileSize: BigInt(155414269),
       channel: 'STABLE',
