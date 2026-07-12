@@ -47,7 +47,8 @@ $config = @"
 ;!@Install@!UTF-8!
 Title="Madsjeez Seller Browser"
 BeginPrompt="Instalar Madsjeez Seller Browser v$Version en este equipo?"
-RunProgram="Instalar.bat /SILENT"
+ExecuteFile="Instalar.bat"
+ExecuteParameters="/SILENT"
 ;!@InstallEnd@!
 "@
 Set-Content -Path $ConfigPath -Value $config -Encoding UTF8

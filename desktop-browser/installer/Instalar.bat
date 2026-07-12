@@ -47,15 +47,16 @@ powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $s = 
 if "%SILENT%"=="0" (
   echo.
   echo  Instalacion completada!
-  echo  Acceso directo creado en el escritorio.
+  echo  Abriendo Madsjeez Seller Browser...
   echo.
-  set /p LAUNCH="Abrir ahora? (S/N): "
-  if /i "%LAUNCH%"=="S" start "" "%INSTALL_DIR%\MadsjeezSellerBrowser.exe"
-  echo.
-  pause
-) else (
-  start "" "%INSTALL_DIR%\MadsjeezSellerBrowser.exe"
 )
+
+rem Esperar a que Windows libere los archivos copiados
+timeout /t 2 /nobreak >nul
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -LiteralPath '%INSTALL_DIR%\MadsjeezSellerBrowser.exe' -WorkingDirectory '%INSTALL_DIR%'"
+
+if "%SILENT%"=="0" pause
 
 endlocal
 exit /b 0

@@ -60,7 +60,7 @@ export function DownloadSection() {
             {[
               { step: '1', text: 'Descargá el instalador .exe' },
               { step: '2', text: 'Ejecutalo y confirmá la instalación' },
-              { step: '3', text: 'Abrí Madsjeez desde el escritorio' },
+              { step: '3', text: 'El navegador se abre solo al terminar' },
             ].map(({ step, text }) => (
               <div key={step} className="flex items-start gap-3">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-white text-xs font-medium">

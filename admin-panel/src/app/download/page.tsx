@@ -62,7 +62,7 @@ export default function DownloadPage() {
                     .NET 8 Desktop Runtime
                   </a>
                 </li>
-                <li>Abrí el acceso directo del escritorio e iniciá sesión</li>
+                <li>Al terminar, el navegador se abre solo — iniciá sesión</li>
               </ol>
             </div>
 
