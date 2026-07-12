@@ -81,9 +81,9 @@ async function main() {
       description:
         'Initial release with browser, workspaces, AI sidebar, and product management.',
       downloadUrl:
-        'https://files.catbox.moe/qq3zsw.zip',
-      checksum: 'sha256:91edaa719e72726c57a6dca8c1f6605f1952c9a5afd61964c10552492dd4a3b1',
-      fileSize: BigInt(102333160),
+        'https://files.catbox.moe/c13a25.zip',
+      checksum: 'sha256:ebd0fbb41c47e213b0a29698b07739f4d968e5ba3cc0fe606219b34c569e3ec1',
+      fileSize: BigInt(102333093),
       channel: 'STABLE',
     },
   });
