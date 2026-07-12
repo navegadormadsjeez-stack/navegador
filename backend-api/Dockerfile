@@ -9,7 +9,10 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 RUN npx prisma generate
-RUN rm -f tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo && npm run build
+ARG CACHEBUST=585c8ae
+RUN rm -f tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo \
+  && npm run build \
+  && test -f dist/main.js || (echo "ERROR: dist/main.js not found after build" && ls -laR dist && exit 1)
 
 FROM node:22-alpine AS runner
 
@@ -25,4 +28,4 @@ COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 3001
 
-CMD ["sh", "-c", "npx prisma db push && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma db push && echo 'Starting API...' && exec node dist/main.js"]
