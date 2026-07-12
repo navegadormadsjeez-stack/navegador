@@ -110,6 +110,34 @@ Ver [docs/deployment-railway.md](docs/deployment-railway.md)
 | 4 | Publicación masiva | 🔜 Preparado |
 | 5 | Automatizaciones | 🔜 Preparado |
 
+## Instalador Windows (profesional)
+
+Instalador con asistente gráfico **Inno Setup** (como cualquier app de Windows):
+
+```powershell
+cd desktop-browser
+.\build-installer.ps1
+```
+
+Genera `desktop-browser/release/MadsjeezSellerBrowserSetup.exe` con:
+
+- Asistente en español (siguiente → instalar → finalizar)
+- Acceso directo en escritorio y menú Inicio
+- Entrada en **Agregar o quitar programas**
+- Apertura automática al terminar
+- Verificación de .NET 8 Desktop Runtime
+
+### Firma gratuita (SmartScreen)
+
+Ver [docs/SIGNPATH.md](docs/SIGNPATH.md) — certificado de código **gratis** vía SignPath Foundation (open source).
+
+Release automático en GitHub Actions al pushear un tag `v*`:
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
 ## Licencia
 
-Propietario - Madsjeez © 2026
+[MIT](LICENSE) — Open source. Firma gratuita con [SignPath Foundation](https://signpath.org/).

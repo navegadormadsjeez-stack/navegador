@@ -3,7 +3,7 @@ export const API_URL =
 
 export const FALLBACK_DOWNLOAD_URL =
   process.env.NEXT_PUBLIC_DOWNLOAD_URL ||
-  'https://files.catbox.moe/wo1mis.zip';
+  'https://files.catbox.moe/1bf0ld.zip';
 
 export const DOWNLOAD_FILENAME = 'MadsjeezSellerBrowserSetup.exe';
 
@@ -34,6 +34,6 @@ export async function fetchDownloadInfo(): Promise<DownloadInfo> {
     version: '0.1.0',
     title: 'Madsjeez Seller Browser MVP',
     downloadUrl: FALLBACK_DOWNLOAD_URL,
-    fileSize: 102337171,
+    fileSize: 106265095,
   };
 }

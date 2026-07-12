@@ -70,10 +70,10 @@ export default function DownloadPage() {
               />
 
               <div className="space-y-2 text-sm text-muted">
-                <p className="font-medium text-foreground">Instalación</p>
+                <p className="font-medium text-foreground">Instalación con asistente</p>
                 <ol className="list-inside list-decimal space-y-1.5">
-                  <li>Descargá el archivo .exe</li>
-                  <li>Ejecutalo y confirmá la instalación</li>
+                  <li>Descargá el instalador .exe</li>
+                  <li>Seguí el asistente (Siguiente → Instalar → Finalizar)</li>
                   <li>
                     Si lo pide, instalá{' '}
                     <a
@@ -85,8 +85,8 @@ export default function DownloadPage() {
                       .NET 8 Desktop Runtime
                     </a>
                   </li>
-                  <li>Se crea el acceso directo en el escritorio</li>
-                  <li>Al terminar, el navegador se abre automáticamente</li>
+                  <li>Se crea el acceso directo en el escritorio y menú Inicio</li>
+                  <li>Al terminar, marcá “Abrir Madsjeez Seller Browser” o Finalizar</li>
                 </ol>
               </div>
 

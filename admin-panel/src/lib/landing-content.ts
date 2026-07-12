@@ -121,7 +121,11 @@ export const FAQ_ITEMS = [
   },
   {
     q: '¿Qué necesito para instalarlo?',
-    a: 'Windows 10 u 11 de 64 bits y .NET 8 Desktop Runtime. Descargás un instalador .exe, confirmás la instalación y el navegador se abre automáticamente.',
+    a: 'Windows 10 u 11 de 64 bits y .NET 8 Desktop Runtime. El instalador es un asistente gráfico estándar: elegís la carpeta, confirmás y el navegador se abre al terminar. Aparece en Agregar o quitar programas.',
+  },
+  {
+    q: 'Windows muestra "protegió su PC" al instalar. ¿Es seguro?',
+    a: 'Es SmartScreen: avisa cuando el instalador aún no tiene reputación en Microsoft. Nuestros builds firmados con SignPath Foundation (certificado gratuito para open source) reducen ese aviso. Si aparece, clic en Más información → Ejecutar de todas formas.',
   },
   {
     q: '¿Es compatible con extensiones de Chrome?',

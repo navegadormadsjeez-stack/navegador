@@ -8,7 +8,7 @@ RUN npm ci
 COPY . .
 RUN mkdir -p public
 ENV NEXT_PUBLIC_API_URL=https://navegador-production.up.railway.app/api/v1
-ENV NEXT_PUBLIC_DOWNLOAD_URL=https://files.catbox.moe/wo1mis.zip
+ENV NEXT_PUBLIC_DOWNLOAD_URL=https://files.catbox.moe/1bf0ld.zip
 RUN npm run build
 
 FROM node:22-alpine AS runner
@@ -17,7 +17,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_PUBLIC_API_URL=https://navegador-production.up.railway.app/api/v1
-ENV NEXT_PUBLIC_DOWNLOAD_URL=https://files.catbox.moe/wo1mis.zip
+ENV NEXT_PUBLIC_DOWNLOAD_URL=https://files.catbox.moe/1bf0ld.zip
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
