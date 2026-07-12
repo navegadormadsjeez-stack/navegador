@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+RUN mkdir -p public
 ENV NEXT_PUBLIC_API_URL=https://navegador-production.up.railway.app/api/v1
 RUN npm run build
 
