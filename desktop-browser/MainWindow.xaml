@@ -163,7 +163,7 @@
 
             <!-- Content -->
             <Grid Grid.Row="2" Background="#000">
-                <cef:ChromiumWebBrowser x:Name="WebBrowser" Address="about:blank"/>
+                <cef:ChromiumWebBrowser x:Name="WebBrowser"/>
                 <views:NewTabPage x:Name="NewTabView" Visibility="Visible"/>
                 <Border x:Name="LoadingOverlay" Background="#80000000" Visibility="Collapsed">
                     <TextBlock Text="Cargando..." Foreground="White" FontSize="16"

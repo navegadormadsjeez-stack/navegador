@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     private readonly List<DownloadEntry> _downloads = new();
     private readonly List<AiMessage> _aiMessages = new();
     private readonly DispatcherTimer _statusTimer = new();
+    private bool _initializing;
 
     public MainWindow(SettingsService settings, ApiService api)
     {
@@ -39,6 +40,8 @@ public partial class MainWindow : Window
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+        _initializing = true;
+
         await SyncFromApiAsync();
 
         _profiles = _settingsService.LoadProfiles();
@@ -52,9 +55,11 @@ public partial class MainWindow : Window
         _activeProfile = _profiles.FirstOrDefault(p => p.Id == activeId) ?? _profiles.First();
         ProfileComboBox.SelectedItem = _activeProfile;
 
-        ApplyProfile(_activeProfile);
         SetupBrowserEvents();
+        ApplyProfile(_activeProfile);
         await LoadFavoritesAsync();
+
+        _initializing = false;
 
         if (!_settingsService.Settings.SidebarOpen)
             ToggleSidebar(false);
@@ -71,7 +76,6 @@ public partial class MainWindow : Window
         _ = _apiService.TrackTelemetryAsync("app_started");
         _ = CheckUpdatesAsync();
 
-        ShowNewTabPage();
         AddAiMessage(false, "Hola. Soy tu asistente para vender online. Elegí una acción rápida o escribí tu consulta.");
     }
 
@@ -183,6 +187,7 @@ public partial class MainWindow : Window
 
     private void ApplyProfile(BrowserProfile profile)
     {
+        var previousProfileId = _activeProfile?.Id;
         _activeProfile = profile;
         _settingsService.Settings.ActiveProfileId = profile.Id;
         _settingsService.Settings.ActiveWorkspaceId = profile.WorkspaceId ?? profile.Id;
@@ -191,12 +196,19 @@ public partial class MainWindow : Window
 
         Directory.CreateDirectory(profile.CachePath);
 
-        var rcSettings = new RequestContextSettings
+        if (!WebBrowser.IsBrowserInitialized)
         {
-            CachePath = profile.CachePath,
-            PersistSessionCookies = true,
-        };
-        WebBrowser.RequestContext = new RequestContext(rcSettings);
+            var rcSettings = new RequestContextSettings
+            {
+                CachePath = profile.CachePath,
+                PersistSessionCookies = true,
+            };
+            WebBrowser.RequestContext = new RequestContext(rcSettings);
+        }
+        else if (previousProfileId != profile.Id)
+        {
+            StatusText.Text = "Perfil cambiado. Reiniciá el navegador para aislar cookies por completo.";
+        }
 
         _tabs.Clear();
         TabBar.Children.Clear();
@@ -328,6 +340,7 @@ public partial class MainWindow : Window
 
     private void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (_initializing) return;
         if (ProfileComboBox.SelectedItem is BrowserProfile profile && profile.Id != _activeProfile?.Id)
             ApplyProfile(profile);
     }

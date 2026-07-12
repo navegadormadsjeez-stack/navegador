@@ -11,6 +11,28 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        DispatcherUnhandledException += (_, args) =>
+        {
+            MessageBox.Show(
+                $"Error inesperado:\n\n{args.Exception.Message}",
+                "Madsjeez Seller Browser",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            args.Handled = true;
+        };
+
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            if (args.ExceptionObject is Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error crítico:\n\n{ex.Message}",
+                    "Madsjeez Seller Browser",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        };
+
         try
         {
             CefSharpInitializer.Initialize();
