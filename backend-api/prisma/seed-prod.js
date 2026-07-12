@@ -66,7 +66,15 @@ async function main() {
 
   await prisma.appUpdate.upsert({
     where: { version: '0.1.0' },
-    update: {},
+    update: {
+      title: 'Madsjeez Seller Browser MVP',
+      description:
+        'Initial release with browser, workspaces, AI sidebar, and product management.',
+      downloadUrl: 'https://files.catbox.moe/duyrzt.zip',
+      checksum: 'sha256:eef08900cb340a09acb668244d513aff1784458a1a8c12d15e60f73afe203d9b',
+      fileSize: BigInt(144720011),
+      channel: 'STABLE',
+    },
     create: {
       version: '0.1.0',
       title: 'Madsjeez Seller Browser MVP',
