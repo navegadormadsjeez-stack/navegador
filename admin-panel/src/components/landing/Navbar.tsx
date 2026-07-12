@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NAV_LINKS } from '@/lib/landing-content';
+import { AppLogo } from './AppLogo';
 import { DownloadButton } from './DownloadButton';
 
 export function Navbar() {
@@ -35,13 +36,8 @@ export function Navbar() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand font-display text-sm font-bold text-brand-foreground">
-            M
-          </span>
-          <span className="font-display text-sm font-semibold tracking-tight text-foreground">
-            Madsjeez
-          </span>
+        <Link href="/" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg">
+          <AppLogo size={32} label="Madsjeez" nameClassName="tracking-tight" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Principal">

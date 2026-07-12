@@ -22,6 +22,11 @@ export const metadata: Metadata = {
     title: 'Madsjeez Seller Browser',
     description: 'El navegador hecho para vendedores online',
     type: 'website',
+    images: ['/brand/app-icon.png'],
+  },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/brand/app-icon.png',
   },
 };
 

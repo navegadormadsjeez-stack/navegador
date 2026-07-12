@@ -1,19 +1,13 @@
 import Link from 'next/link';
 import { APP_VERSION } from '@/lib/landing-content';
+import { AppLogo } from './AppLogo';
 
 export function Footer() {
   return (
     <footer className="border-t border-border py-12">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 sm:px-6 md:flex-row md:items-start md:justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand font-display text-sm font-bold text-brand-foreground">
-              M
-            </span>
-            <span className="font-display text-sm font-semibold text-foreground">
-              Madsjeez Seller Browser
-            </span>
-          </div>
+          <AppLogo size={32} nameClassName="text-sm" />
           <p className="mt-2 text-xs text-muted">Versión {APP_VERSION}</p>
         </div>
 
