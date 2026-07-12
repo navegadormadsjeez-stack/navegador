@@ -1,0 +1,40 @@
+name: Deploy Admin Panel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'admin-panel/**'
+      - '.github/workflows/deploy-admin-panel.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-admin-panel
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy admin-panel to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SERVICE: ${{ vars.RAILWAY_ADMIN_SERVICE || 'admin-panel' }}
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::error::Falta RAILWAY_TOKEN en GitHub Secrets. Creá un token en Railway > Project Settings > Tokens."
+            exit 1
+          fi
+          railway up ./admin-panel \
+            --path-as-root \
+            --project b2d7d45d-1061-4bad-a6d6-6dad2c4f3782 \
+            --service "$RAILWAY_SERVICE" \
+            --environment production \
+            --detach \
+            --ci \
+            --message "Deploy landing admin-panel ${{ github.sha }}"

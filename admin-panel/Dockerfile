@@ -2,6 +2,9 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+ARG BUILD_SHA=local
+ENV NEXT_PUBLIC_BUILD_SHA=${BUILD_SHA}
+
 COPY package*.json ./
 RUN npm ci
 
