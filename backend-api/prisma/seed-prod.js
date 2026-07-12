@@ -65,25 +65,24 @@ async function main() {
   });
 
   await prisma.appUpdate.upsert({
-    where: { version: '0.1.0' },
+    where: { version: '0.1.6' },
     update: {
-      title: 'Madsjeez Seller Browser MVP',
+      title: 'Madsjeez Seller Browser v0.1.6',
       description:
-        'Initial release with browser, workspaces, AI sidebar, and product management.',
-      downloadUrl: 'https://files.catbox.moe/j28i1p.zip',
-      checksum: 'sha256:25c11859367229a5181668f818e70a53648d5c7c3b6dd0bb35eeace4b8fa5a2c',
-      fileSize: BigInt(155866695),
+        'Pantalla de Ajustes real, fix captcha Google (User-Agent Chrome), búsqueda DuckDuckGo y atajos directos.',
+      downloadUrl: 'https://files.catbox.moe/6vf5m8.zip',
+      checksum: 'sha256:e4b6f26f3c2f036ddb8045e0db21cb1f6ec955f76fc703ed3820b74100004561',
+      fileSize: BigInt(155407048),
       channel: 'STABLE',
     },
     create: {
-      version: '0.1.0',
-      title: 'Madsjeez Seller Browser MVP',
+      version: '0.1.6',
+      title: 'Madsjeez Seller Browser v0.1.6',
       description:
-        'Initial release with browser, workspaces, AI sidebar, and product management.',
-      downloadUrl:
-        'https://files.catbox.moe/j28i1p.zip',
-      checksum: 'sha256:25c11859367229a5181668f818e70a53648d5c7c3b6dd0bb35eeace4b8fa5a2c',
-      fileSize: BigInt(155866695),
+        'Pantalla de Ajustes real, fix captcha Google (User-Agent Chrome), búsqueda DuckDuckGo y atajos directos.',
+      downloadUrl: 'https://files.catbox.moe/6vf5m8.zip',
+      checksum: 'sha256:e4b6f26f3c2f036ddb8045e0db21cb1f6ec955f76fc703ed3820b74100004561',
+      fileSize: BigInt(155407048),
       channel: 'STABLE',
     },
   });

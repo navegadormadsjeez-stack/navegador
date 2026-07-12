@@ -165,6 +165,7 @@
             <Grid Grid.Row="2" Background="#000">
                 <cef:ChromiumWebBrowser x:Name="WebBrowser"/>
                 <views:NewTabPage x:Name="NewTabView" Visibility="Visible"/>
+                <views:SettingsPage x:Name="SettingsView" Visibility="Collapsed"/>
                 <Border x:Name="LoadingOverlay" Background="#80000000" Visibility="Collapsed">
                     <TextBlock Text="Cargando..." Foreground="White" FontSize="16"
                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -185,7 +186,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <TextBlock Text="Protección activa" FontSize="11" Foreground="{StaticResource SuccessBrush}" Margin="0,0,8,0"/>
-                        <TextBlock x:Name="VersionText" Text="v0.1.0" FontSize="11"
+                        <TextBlock x:Name="VersionText" Text="v0.1.6" FontSize="11"
                                    Foreground="{StaticResource TextMutedBrush}"/>
                     </StackPanel>
                 </Grid>

@@ -33,6 +33,11 @@ public partial class MainWindow : Window
         InitializeComponent();
         NewTabView.NavigateRequested += (_, url) => NavigateTo(url);
         NewTabView.AiAssistRequested += (_, _) => ToggleSidebar(true);
+        SettingsView.LogoutRequested += (_, _) => HandleLogout();
+        SettingsView.SaveRequested += (_, _) => HandleSaveSettings();
+        SettingsView.ClearHistoryRequested += (_, _) => HandleClearHistory();
+        SettingsView.ClearCacheRequested += (_, _) => HandleClearCache();
+        SettingsView.NavigateRequested += (_, url) => NavigateTo(url);
         Loaded += MainWindow_Loaded;
         _statusTimer.Interval = TimeSpan.FromSeconds(2);
         _statusTimer.Tick += (_, _) => UpdateSystemStats();
@@ -98,13 +103,36 @@ public partial class MainWindow : Window
     private void ShowNewTabPage()
     {
         NewTabView.Visibility = Visibility.Visible;
+        SettingsView.Visibility = Visibility.Collapsed;
         WebBrowser.Visibility = Visibility.Collapsed;
     }
 
-    private void HideNewTabPage()
+    private void ShowSettingsPage()
+    {
+        RefreshSettingsPage();
+        NewTabView.Visibility = Visibility.Collapsed;
+        SettingsView.Visibility = Visibility.Visible;
+        WebBrowser.Visibility = Visibility.Collapsed;
+    }
+
+    private void HideInternalPages()
     {
         NewTabView.Visibility = Visibility.Collapsed;
+        SettingsView.Visibility = Visibility.Collapsed;
         WebBrowser.Visibility = Visibility.Visible;
+    }
+
+    private void RefreshSettingsPage()
+    {
+        SettingsView.LoadData(
+            _settingsService.Settings.UserEmail ?? "",
+            _settingsService.Settings.UserName,
+            _activeProfile?.Name ?? "—",
+            _profiles.Select(p => p.Name),
+            _settingsService.Settings.HomePage,
+            _settingsService.Settings.SidebarOpen,
+            _settingsService.Settings.SearchEngine,
+            VersionText.Text.TrimStart('v'));
     }
 
     private async Task SyncFromApiAsync()
@@ -158,7 +186,7 @@ public partial class MainWindow : Window
                     _activeTab.IsLoading = args.IsLoading;
                     if (!args.IsLoading && WebBrowser.Address != "about:blank")
                     {
-                        HideNewTabPage();
+                        HideInternalPages();
                         _activeTab.Url = WebBrowser.Address;
                         _activeTab.Title = WebBrowser.Title ?? WebBrowser.Address;
                         UrlTextBox.Text = WebBrowser.Address;
@@ -284,7 +312,7 @@ public partial class MainWindow : Window
         }
         else
         {
-            HideNewTabPage();
+            HideInternalPages();
             if (WebBrowser.Address != tab.Url)
                 WebBrowser.Load(tab.Url);
             UrlTextBox.Text = tab.Url;
@@ -360,7 +388,7 @@ public partial class MainWindow : Window
     private void NavigateTo(string input)
     {
         var url = NormalizeUrl(input);
-        HideNewTabPage();
+        HideInternalPages();
         if (_activeTab != null)
         {
             _activeTab.Url = url;
@@ -395,12 +423,89 @@ public partial class MainWindow : Window
             MessageBoxButton.OK,
             MessageBoxImage.Information);
 
-    private void NavSettingsBtn_Click(object sender, RoutedEventArgs e) =>
-        MessageBox.Show(
-            $"Perfil activo: {_activeProfile?.Name ?? "—"}\nUsuario: {_settingsService.Settings.UserEmail}\n\nCambiá el workspace desde el selector en la barra lateral.",
-            "Ajustes",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+    private void NavSettingsBtn_Click(object sender, RoutedEventArgs e) => ShowSettingsPage();
+
+    private void HandleSaveSettings()
+    {
+        _settingsService.Settings.HomePage = SettingsView.GetHomePage();
+        _settingsService.Settings.SidebarOpen = SettingsView.GetSidebarOpen();
+        _settingsService.Settings.SearchEngine = SettingsView.GetSearchEngine();
+        _settingsService.Save();
+        ToggleSidebar(_settingsService.Settings.SidebarOpen);
+        StatusText.Text = "Preferencias guardadas";
+    }
+
+    private void HandleClearHistory()
+    {
+        var result = MessageBox.Show(
+            "¿Borrar todo el historial local de esta sesión?",
+            "Limpiar historial",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (result != MessageBoxResult.Yes) return;
+
+        _history.Clear();
+        StatusText.Text = "Historial local borrado";
+    }
+
+    private void HandleClearCache()
+    {
+        if (_activeProfile == null) return;
+
+        var result = MessageBox.Show(
+            $"¿Borrar caché y cookies del perfil \"{_activeProfile.Name}\"?\n\nReiniciá el navegador después para aplicar los cambios.",
+            "Limpiar caché",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+        if (result != MessageBoxResult.Yes) return;
+
+        try
+        {
+            if (Directory.Exists(_activeProfile.CachePath))
+                Directory.Delete(_activeProfile.CachePath, recursive: true);
+            Directory.CreateDirectory(_activeProfile.CachePath);
+            StatusText.Text = "Caché borrada. Reiniciá el navegador.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"No se pudo borrar la caché:\n\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void HandleLogout()
+    {
+        var result = MessageBox.Show(
+            "¿Cerrar sesión?",
+            "Cerrar sesión",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (result != MessageBoxResult.Yes) return;
+
+        _apiService.ClearAuth();
+        var login = new Views.LoginWindow(_settingsService, _apiService);
+        if (login.ShowDialog() != true)
+        {
+            Application.Current.Shutdown();
+            return;
+        }
+
+        Title = $"Madsjeez Seller Browser — {_settingsService.Settings.UserEmail}";
+        SyncStatusText.Text = "Sincronizado";
+        await RefreshProfilesAsync();
+        StatusText.Text = "Sesión iniciada";
+    }
+
+    private async Task RefreshProfilesAsync()
+    {
+        await SyncFromApiAsync();
+        _profiles = _settingsService.LoadProfiles();
+        ProfileComboBox.ItemsSource = _profiles;
+        var activeId = _settingsService.Settings.ActiveProfileId;
+        _activeProfile = _profiles.FirstOrDefault(p => p.Id == activeId) ?? _profiles.FirstOrDefault();
+        if (_activeProfile != null)
+            ProfileComboBox.SelectedItem = _activeProfile;
+        RefreshSettingsPage();
+    }
 
     private void NavProBtn_Click(object sender, RoutedEventArgs e) =>
         MessageBox.Show(
@@ -409,15 +514,37 @@ public partial class MainWindow : Window
             MessageBoxButton.OK,
             MessageBoxImage.Information);
 
-    private static string NormalizeUrl(string input)
+    private static readonly Dictionary<string, string> QuickSites = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["mercadolibre"] = "https://www.mercadolibre.com.ar",
+        ["mercado libre"] = "https://www.mercadolibre.com.ar",
+        ["ml"] = "https://www.mercadolibre.com.ar",
+        ["google"] = "https://www.google.com",
+        ["youtube"] = "https://www.youtube.com",
+        ["whatsapp"] = "https://web.whatsapp.com",
+        ["gmail"] = "https://mail.google.com",
+        ["facebook"] = "https://www.facebook.com",
+        ["instagram"] = "https://www.instagram.com",
+    };
+
+    private string NormalizeUrl(string input)
     {
         input = input.Trim();
         if (string.IsNullOrEmpty(input)) return "about:blank";
 
-        if (!input.Contains('.') && !input.StartsWith("http"))
-            return $"https://www.google.com/search?q={Uri.EscapeDataString(input)}";
+        if (QuickSites.TryGetValue(input, out var direct))
+            return direct;
 
-        if (!input.StartsWith("http://") && !input.StartsWith("https://"))
+        if (!input.Contains('.') && !input.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        {
+            var engine = _settingsService.Settings.SearchEngine;
+            return engine.Equals("google", StringComparison.OrdinalIgnoreCase)
+                ? $"https://www.google.com/search?q={Uri.EscapeDataString(input)}"
+                : $"https://duckduckgo.com/?q={Uri.EscapeDataString(input)}";
+        }
+
+        if (!input.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            && !input.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             return "https://" + input;
 
         return input;
@@ -497,7 +624,7 @@ public partial class MainWindow : Window
 
     private async Task CheckUpdatesAsync()
     {
-        var update = await _apiService.CheckForUpdatesAsync("0.1.0");
+        var update = await _apiService.CheckForUpdatesAsync("0.1.6");
         if (update == null)
         {
             StatusText.Text = "Modo offline - API no disponible";

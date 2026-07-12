@@ -14,7 +14,7 @@ public static class CefSharpInitializer
         var settings = new CefSettings
         {
             LogSeverity = LogSeverity.Warning,
-            UserAgent = "MadsjeezSellerBrowser/0.1.0 (Windows; Seller OS)",
+            // User-Agent estándar Chromium/Chrome — evita bloqueos de Google por "tráfico inusual"
         };
 
         settings.CefCommandLineArgs.Add("enable-media-stream", "1");

@@ -1,0 +1,122 @@
+<UserControl x:Class="MadsjeezSellerBrowser.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgPrimaryBrush}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="32,24,32,32" MaxWidth="720" HorizontalAlignment="Center">
+
+            <StackPanel Margin="0,8,0,28">
+                <TextBlock Text="Ajustes" FontSize="26" FontWeight="Bold"
+                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                <TextBlock Text="Configurá tu cuenta, perfil y preferencias del navegador."
+                           FontSize="13" Foreground="{StaticResource TextMutedBrush}" Margin="0,6,0,0"/>
+            </StackPanel>
+
+            <!-- Cuenta -->
+            <TextBlock Text="Cuenta" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>
+            <Border Style="{StaticResource GlassPanel}" Padding="18" Margin="0,0,0,20">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Usuario" Foreground="{StaticResource TextMutedBrush}" FontSize="12"/>
+                        <TextBlock x:Name="UserEmailText" Grid.Column="1"
+                                   Foreground="{StaticResource TextPrimaryBrush}" FontSize="13"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Nombre" Foreground="{StaticResource TextMutedBrush}" FontSize="12"/>
+                        <TextBlock x:Name="UserNameText" Grid.Column="1"
+                                   Foreground="{StaticResource TextPrimaryBrush}" FontSize="13"/>
+                    </Grid>
+                    <Button Content="Cerrar sesión" Style="{StaticResource AiActionButton}"
+                            HorizontalAlignment="Left" Width="160"
+                            Click="LogoutBtn_Click"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Perfil -->
+            <TextBlock Text="Perfil activo" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>
+            <Border Style="{StaticResource GlassPanel}" Padding="18" Margin="0,0,0,20">
+                <StackPanel>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Workspace" Foreground="{StaticResource TextMutedBrush}" FontSize="12"/>
+                        <TextBlock x:Name="ProfileNameText" Grid.Column="1"
+                                   Foreground="{StaticResource AccentCyanBrush}" FontSize="13" FontWeight="SemiBold"/>
+                    </Grid>
+                    <TextBlock x:Name="ProfilesListText" TextWrapping="Wrap"
+                               Foreground="{StaticResource TextMutedBrush}" FontSize="12" Margin="0,0,0,8"/>
+                    <TextBlock Text="Cambiá el workspace desde el selector en la barra lateral."
+                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Preferencias -->
+            <TextBlock Text="Preferencias" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>
+            <Border Style="{StaticResource GlassPanel}" Padding="18" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Página de inicio" Foreground="{StaticResource TextMutedBrush}"
+                               FontSize="12" Margin="0,0,0,6"/>
+                    <TextBox x:Name="HomePageBox" Style="{StaticResource UrlTextBox}"
+                             Margin="0,0,0,14"/>
+
+                    <TextBlock Text="Motor de búsqueda" Foreground="{StaticResource TextMutedBrush}"
+                               FontSize="12" Margin="0,0,0,6"/>
+                    <ComboBox x:Name="SearchEngineBox" Margin="0,0,0,14"
+                              Background="#121A2E" Foreground="{StaticResource TextPrimaryBrush}">
+                        <ComboBoxItem Content="DuckDuckGo" Tag="duckduckgo"/>
+                        <ComboBoxItem Content="Google" Tag="google"/>
+                    </ComboBox>
+
+                    <CheckBox x:Name="SidebarOpenCheck" Content="Mostrar panel IA al abrir"
+                              Foreground="{StaticResource TextPrimaryBrush}" FontSize="13"
+                              Margin="0,0,0,14"/>
+
+                    <Button Content="Guardar preferencias" Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left" Width="180" Click="SaveBtn_Click"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Datos -->
+            <TextBlock Text="Datos y privacidad" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>
+            <Border Style="{StaticResource GlassPanel}" Padding="18" Margin="0,0,0,20">
+                <StackPanel>
+                    <Button Content="Limpiar historial local" Style="{StaticResource AiActionButton}"
+                            Click="ClearHistoryBtn_Click"/>
+                    <Button Content="Limpiar caché del perfil" Style="{StaticResource AiActionButton}"
+                            Click="ClearCacheBtn_Click"/>
+                    <TextBlock Text="Limpiar caché borra cookies y datos guardados del perfil activo. Reiniciá el navegador después."
+                               Foreground="{StaticResource TextMutedBrush}" FontSize="11"
+                               TextWrapping="Wrap" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Acerca de -->
+            <TextBlock Text="Acerca de" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>
+            <Border Style="{StaticResource GlassPanel}" Padding="18">
+                <StackPanel>
+                    <TextBlock Text="Madsjeez Seller Browser" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}" FontSize="14"/>
+                    <TextBlock x:Name="VersionText" Foreground="{StaticResource TextMutedBrush}"
+                               FontSize="12" Margin="0,4,0,12"/>
+                    <Button Content="Visitar madsjeez.com" Style="{StaticResource AiActionButton}"
+                            HorizontalAlignment="Left" Width="200" Click="WebsiteBtn_Click"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
