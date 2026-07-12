@@ -4,7 +4,7 @@
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = $PSScriptRoot
-$Version = "0.1.7"
+$Version = "0.1.8"
 $PublishDir = Join-Path $ProjectRoot "publish\win-x64"
 $ReleaseDir = Join-Path $ProjectRoot "release"
 $SetupPath = Join-Path $ReleaseDir "MadsjeezSellerBrowserSetup.exe"

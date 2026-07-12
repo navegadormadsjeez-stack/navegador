@@ -186,7 +186,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <TextBlock Text="Protección activa" FontSize="11" Foreground="{StaticResource SuccessBrush}" Margin="0,0,8,0"/>
-                        <TextBlock x:Name="VersionText" Text="v0.1.7" FontSize="11"
+                        <TextBlock x:Name="VersionText" Text="v0.1.8" FontSize="11"
                                    Foreground="{StaticResource TextMutedBrush}"/>
                     </StackPanel>
                 </Grid>

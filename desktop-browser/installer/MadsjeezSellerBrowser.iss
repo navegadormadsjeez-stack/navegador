@@ -3,7 +3,7 @@
 ; Requiere publish en ..\publish\win-x64 (ver build-installer.ps1)
 
 #define MyAppName "Madsjeez Seller Browser"
-#define MyAppVersion "0.1.7"
+#define MyAppVersion "0.1.8"
 #define MyAppPublisher "Madsjeez"
 #define MyAppURL "https://admin-panel-production-b4e5.up.railway.app"
 #define MyAppExeName "MadsjeezSellerBrowser.exe"
@@ -91,11 +91,15 @@ function InitializeSetup(): Boolean;
 begin
   PrevVersion := InstalledVersion();
   IsUpgrade := PrevVersion <> '';
+  Result := True;
+end;
+
+procedure InitializeWizard();
+begin
   if IsUpgrade then
     WizardForm.Caption := 'Actualizar {#MyAppName}'
   else
     WizardForm.Caption := 'Instalar {#MyAppName}';
-  Result := True;
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
@@ -114,10 +118,10 @@ begin
     WizardForm.StatusLabel.Caption := 'Actualizando a la versión {#MyAppVersion}...';
 end;
 
-function UpdateReadyMemo(Space, NewLine, MemoUserInfoInfo, MemoUserInfoSelected, MemoUserInfoParam,
-  MemoSetupInfo, MemoGroupInfo, MemoComponentsInfo: String): String;
+function UpdateReadyMemo(const Space, NewLine, MemoUserInfoInfo, MemoDirInfo, MemoTypeInfo,
+  MemoComponentsInfo, MemoGroupInfo, MemoTasksInfo: String): String;
 begin
-  Result := MemoSetupInfo + NewLine + NewLine;
+  Result := MemoDirInfo + NewLine + NewLine;
   if IsUpgrade then
     Result := Result + 'Tipo: Actualización' + NewLine +
               'Versión anterior: ' + PrevVersion + NewLine +

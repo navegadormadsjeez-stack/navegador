@@ -65,25 +65,25 @@ async function main() {
   });
 
   await prisma.appUpdate.upsert({
-    where: { version: '0.1.7' },
+    where: { version: '0.1.8' },
     update: {
-      title: 'Madsjeez Seller Browser v0.1.7',
+      title: 'Madsjeez Seller Browser v0.1.8',
       description:
-        'Actualización in-place: reinstalar el setup sobre la versión existente. Buscar/instalar actualizaciones desde Ajustes.',
+        'Corrige el error del instalador (Could not call proc). Actualización in-place: reinstalar el setup sobre la versión existente. Buscar/instalar actualizaciones desde Ajustes.',
       downloadUrl:
-        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.7/MadsjeezSellerBrowserSetup.exe',
-      checksum: 'sha256:8c44c37fc7e0cfee432b71b8f7c0e05c59aa4ee337e73e5f6681dd93d60173af',
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.8/MadsjeezSellerBrowserSetup.exe',
+      checksum: 'sha256:pending',
       fileSize: BigInt(155414269),
       channel: 'STABLE',
     },
     create: {
-      version: '0.1.7',
-      title: 'Madsjeez Seller Browser v0.1.7',
+      version: '0.1.8',
+      title: 'Madsjeez Seller Browser v0.1.8',
       description:
-        'Actualización in-place: reinstalar el setup sobre la versión existente. Buscar/instalar actualizaciones desde Ajustes.',
+        'Corrige el error del instalador (Could not call proc). Actualización in-place: reinstalar el setup sobre la versión existente. Buscar/instalar actualizaciones desde Ajustes.',
       downloadUrl:
-        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.7/MadsjeezSellerBrowserSetup.exe',
-      checksum: 'sha256:8c44c37fc7e0cfee432b71b8f7c0e05c59aa4ee337e73e5f6681dd93d60173af',
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.8/MadsjeezSellerBrowserSetup.exe',
+      checksum: 'sha256:pending',
       fileSize: BigInt(155414269),
       channel: 'STABLE',
     },
