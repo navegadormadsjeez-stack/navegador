@@ -7,8 +7,15 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  console.log('Booting Madsjeez API...', {
+    node: process.version,
+    port: process.env.PORT ?? 'default',
+    env: process.env.NODE_ENV,
+  });
   try {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+      logger: ['error', 'warn', 'log'],
+    });
   const config = app.get(ConfigService);
 
   app.use(helmet());
