@@ -65,24 +65,24 @@ async function main() {
   });
 
   await prisma.appUpdate.upsert({
-    where: { version: '0.1.6' },
+    where: { version: '0.1.7' },
     update: {
-      title: 'Madsjeez Seller Browser v0.1.6',
+      title: 'Madsjeez Seller Browser v0.1.7',
       description:
-        'Pantalla de Ajustes real, fix captcha Google (User-Agent Chrome), búsqueda DuckDuckGo y atajos directos.',
-      downloadUrl: 'https://files.catbox.moe/6vf5m8.zip',
-      checksum: 'sha256:e4b6f26f3c2f036ddb8045e0db21cb1f6ec955f76fc703ed3820b74100004561',
-      fileSize: BigInt(155407048),
+        'Actualización in-place: reinstalar el setup sobre la versión existente. Buscar/instalar actualizaciones desde Ajustes.',
+      downloadUrl: 'https://files.catbox.moe/nifm3p.zip',
+      checksum: 'sha256:8c44c37fc7e0cfee432b71b8f7c0e05c59aa4ee337e73e5f6681dd93d60173af',
+      fileSize: BigInt(155414269),
       channel: 'STABLE',
     },
     create: {
-      version: '0.1.6',
-      title: 'Madsjeez Seller Browser v0.1.6',
+      version: '0.1.7',
+      title: 'Madsjeez Seller Browser v0.1.7',
       description:
-        'Pantalla de Ajustes real, fix captcha Google (User-Agent Chrome), búsqueda DuckDuckGo y atajos directos.',
-      downloadUrl: 'https://files.catbox.moe/6vf5m8.zip',
-      checksum: 'sha256:e4b6f26f3c2f036ddb8045e0db21cb1f6ec955f76fc703ed3820b74100004561',
-      fileSize: BigInt(155407048),
+        'Actualización in-place: reinstalar el setup sobre la versión existente. Buscar/instalar actualizaciones desde Ajustes.',
+      downloadUrl: 'https://files.catbox.moe/nifm3p.zip',
+      checksum: 'sha256:8c44c37fc7e0cfee432b71b8f7c0e05c59aa4ee337e73e5f6681dd93d60173af',
+      fileSize: BigInt(155414269),
       channel: 'STABLE',
     },
   });

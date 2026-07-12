@@ -46,6 +46,22 @@ public class ApiFavorite
 public class UpdateCheckResult
 {
     public bool UpdateAvailable { get; set; }
-    public string? Version { get; set; }
+    public string? CurrentVersion { get; set; }
+    public UpdateInfo? Latest { get; set; }
+
+    // Compatibilidad con respuestas planas
+    public string? Version => Latest?.Version;
+    public string? Title => Latest?.Title;
+    public string? DownloadUrl => Latest?.DownloadUrl;
+}
+
+public class UpdateInfo
+{
+    public string Version { get; set; } = string.Empty;
     public string? Title { get; set; }
+    public string? Description { get; set; }
+    public string? DownloadUrl { get; set; }
+    public string? Checksum { get; set; }
+    public long? FileSize { get; set; }
+    public bool IsMandatory { get; set; }
 }

@@ -7,9 +7,23 @@ namespace MadsjeezSellerBrowser;
 
 public partial class App : Application
 {
+    private static Mutex? _instanceMutex;
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        _instanceMutex = new Mutex(true, "MadsjeezSellerBrowser", out var isFirstInstance);
+        if (!isFirstInstance)
+        {
+            MessageBox.Show(
+                "Madsjeez Seller Browser ya está abierto.",
+                "Madsjeez Seller Browser",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            Shutdown();
+            return;
+        }
 
         DispatcherUnhandledException += (_, args) =>
         {
@@ -77,6 +91,8 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _instanceMutex?.ReleaseMutex();
+        _instanceMutex?.Dispose();
         Cef.Shutdown();
         base.OnExit(e);
     }

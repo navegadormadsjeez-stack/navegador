@@ -310,7 +310,7 @@ public class ApiService
         {
             eventType,
             payload,
-            appVersion = "0.1.0",
+            appVersion = UpdateInstallerService.GetAppVersion(),
             osVersion = Environment.OSVersion.ToString(),
         };
         var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}/telemetry/track")

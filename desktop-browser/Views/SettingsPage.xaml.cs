@@ -9,7 +9,11 @@ public partial class SettingsPage : UserControl
     public event EventHandler? SaveRequested;
     public event EventHandler? ClearHistoryRequested;
     public event EventHandler? ClearCacheRequested;
+    public event EventHandler? CheckUpdatesRequested;
+    public event EventHandler? InstallUpdateRequested;
     public event EventHandler<string>? NavigateRequested;
+
+    private string? _pendingUpdateUrl;
 
     public SettingsPage()
     {
@@ -42,7 +46,19 @@ public partial class SettingsPage : UserControl
             SearchEngineBox.SelectedIndex = 0;
 
         VersionText.Text = $"Versión {version}";
+        UpdateStatusText.Text = "Podés reinstalar el instalador sobre la versión actual para actualizar.";
+        InstallUpdateBtn.Visibility = Visibility.Collapsed;
+        _pendingUpdateUrl = null;
     }
+
+    public void SetUpdateStatus(string message, bool canInstall, string? downloadUrl = null)
+    {
+        UpdateStatusText.Text = message;
+        _pendingUpdateUrl = downloadUrl;
+        InstallUpdateBtn.Visibility = canInstall ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public string? GetPendingUpdateUrl() => _pendingUpdateUrl;
 
     public string GetHomePage() => HomePageBox.Text.Trim();
 
@@ -67,4 +83,10 @@ public partial class SettingsPage : UserControl
 
     private void WebsiteBtn_Click(object sender, RoutedEventArgs e) =>
         NavigateRequested?.Invoke(this, "https://www.madsjeez.com");
+
+    private void CheckUpdatesBtn_Click(object sender, RoutedEventArgs e) =>
+        CheckUpdatesRequested?.Invoke(this, EventArgs.Empty);
+
+    private void InstallUpdateBtn_Click(object sender, RoutedEventArgs e) =>
+        InstallUpdateRequested?.Invoke(this, EventArgs.Empty);
 }

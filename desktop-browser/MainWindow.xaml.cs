@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     private readonly List<DownloadEntry> _downloads = new();
     private readonly List<AiMessage> _aiMessages = new();
     private readonly DispatcherTimer _statusTimer = new();
+    private readonly UpdateInstallerService _updateService = new();
     private bool _initializing;
 
     public MainWindow(SettingsService settings, ApiService api)
@@ -38,6 +39,8 @@ public partial class MainWindow : Window
         SettingsView.ClearHistoryRequested += (_, _) => HandleClearHistory();
         SettingsView.ClearCacheRequested += (_, _) => HandleClearCache();
         SettingsView.NavigateRequested += (_, url) => NavigateTo(url);
+        SettingsView.CheckUpdatesRequested += (_, _) => _ = HandleCheckUpdatesAsync();
+        SettingsView.InstallUpdateRequested += (_, _) => _ = HandleInstallUpdateAsync();
         Loaded += MainWindow_Loaded;
         _statusTimer.Interval = TimeSpan.FromSeconds(2);
         _statusTimer.Tick += (_, _) => UpdateSystemStats();
@@ -78,6 +81,7 @@ public partial class MainWindow : Window
             : "Sincronizado";
 
         Title = $"Madsjeez Seller Browser — {_settingsService.Settings.UserEmail}";
+        VersionText.Text = $"v{UpdateInstallerService.GetAppVersion()}";
         _ = _apiService.TrackTelemetryAsync("app_started");
         _ = CheckUpdatesAsync();
 
@@ -132,7 +136,7 @@ public partial class MainWindow : Window
             _settingsService.Settings.HomePage,
             _settingsService.Settings.SidebarOpen,
             _settingsService.Settings.SearchEngine,
-            VersionText.Text.TrimStart('v'));
+            UpdateInstallerService.GetAppVersion());
     }
 
     private async Task SyncFromApiAsync()
@@ -624,14 +628,88 @@ public partial class MainWindow : Window
 
     private async Task CheckUpdatesAsync()
     {
-        var update = await _apiService.CheckForUpdatesAsync("0.1.6");
+        var update = await _apiService.CheckForUpdatesAsync(UpdateInstallerService.GetAppVersion());
         if (update == null)
         {
             StatusText.Text = "Modo offline - API no disponible";
             return;
         }
         if (update.UpdateAvailable)
-            StatusText.Text = $"Actualización disponible: v{update.Version}";
+        {
+            var latest = update.Latest?.Version ?? update.Version ?? "?";
+            StatusText.Text = $"Actualización disponible: v{latest}";
+        }
+    }
+
+    private async Task HandleCheckUpdatesAsync()
+    {
+        var current = UpdateInstallerService.GetAppVersion();
+        SettingsView.SetUpdateStatus("Buscando actualizaciones...", canInstall: false);
+        StatusText.Text = "Buscando actualizaciones...";
+
+        var update = await _apiService.CheckForUpdatesAsync(current);
+        if (update == null)
+        {
+            SettingsView.SetUpdateStatus(
+                "No se pudo conectar al servidor. Podés descargar el instalador desde madsjeez.com e instalarlo sobre la versión actual.",
+                canInstall: false);
+            StatusText.Text = "Sin conexión para buscar actualizaciones";
+            return;
+        }
+
+        if (!update.UpdateAvailable)
+        {
+            SettingsView.SetUpdateStatus($"Tenés la última versión (v{current}).", canInstall: false);
+            StatusText.Text = "Estás al día";
+            return;
+        }
+
+        var latestVersion = update.Latest?.Version ?? update.Version ?? "?";
+        var downloadUrl = update.Latest?.DownloadUrl ?? update.DownloadUrl;
+        SettingsView.SetUpdateStatus(
+            $"Hay una nueva versión: v{latestVersion} (actual: v{current}). Podés instalarla sin desinstalar la anterior.",
+            canInstall: !string.IsNullOrEmpty(downloadUrl),
+            downloadUrl);
+        StatusText.Text = $"Actualización disponible: v{latestVersion}";
+    }
+
+    private async Task HandleInstallUpdateAsync()
+    {
+        var downloadUrl = SettingsView.GetPendingUpdateUrl();
+        if (string.IsNullOrEmpty(downloadUrl))
+        {
+            MessageBox.Show(
+                "Primero buscá actualizaciones.",
+                "Actualizar",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            "Se descargará el instalador y se cerrará el navegador para actualizar.\n\n¿Continuar?",
+            "Instalar actualización",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            StatusText.Text = "Descargando actualización...";
+            SettingsView.SetUpdateStatus("Descargando actualización...", canInstall: false);
+            var setupPath = await _updateService.DownloadAndExtractInstallerAsync(downloadUrl);
+            _updateService.LaunchInstaller(setupPath);
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"No se pudo descargar la actualización:\n\n{ex.Message}\n\nTambién podés descargar el instalador manualmente desde la web e instalarlo sobre la versión actual.",
+                "Error de actualización",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            StatusText.Text = "Error al descargar actualización";
+        }
     }
 
     // AI Actions
