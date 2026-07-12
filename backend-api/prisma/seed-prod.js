@@ -82,8 +82,8 @@ async function main() {
         'Initial release with browser, workspaces, AI sidebar, and product management.',
       downloadUrl:
         'https://files.catbox.moe/hbhb3i.zip',
-      checksum: 'sha256:ebd0fbb41c47e213b0a29698b07739f4d968e5ba3cc0fe606219b34c569e3ec1',
-      fileSize: BigInt(102333093),
+      checksum: 'sha256:9dd9930459b1c54de22534f42cdd786ec137eeddfdcdf704b90be3c307dd80d5',
+      fileSize: BigInt(102335702),
       channel: 'STABLE',
     },
   });
