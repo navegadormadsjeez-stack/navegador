@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using CefSharp;
 using MadsjeezSellerBrowser.Models;
 using MadsjeezSellerBrowser.Services;
@@ -21,13 +23,18 @@ public partial class MainWindow : Window
     private readonly List<FavoriteEntry> _favorites = new();
     private readonly List<DownloadEntry> _downloads = new();
     private readonly List<AiMessage> _aiMessages = new();
+    private readonly DispatcherTimer _statusTimer = new();
 
     public MainWindow(SettingsService settings, ApiService api)
     {
         _settingsService = settings;
         _apiService = api;
         InitializeComponent();
+        NewTabView.NavigateRequested += (_, url) => NavigateTo(url);
+        NewTabView.AiAssistRequested += (_, _) => ToggleSidebar(true);
         Loaded += MainWindow_Loaded;
+        _statusTimer.Interval = TimeSpan.FromSeconds(2);
+        _statusTimer.Tick += (_, _) => UpdateSystemStats();
     }
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -51,12 +58,49 @@ public partial class MainWindow : Window
 
         if (!_settingsService.Settings.SidebarOpen)
             ToggleSidebar(false);
+        else
+            ToggleSidebar(true);
+
+        _statusTimer.Start();
+        UpdateSystemStats();
+        SyncStatusText.Text = string.IsNullOrEmpty(_settingsService.Settings.UserEmail)
+            ? "Sin sesión"
+            : "Sincronizado";
 
         Title = $"Madsjeez Seller Browser — {_settingsService.Settings.UserEmail}";
         _ = _apiService.TrackTelemetryAsync("app_started");
         _ = CheckUpdatesAsync();
 
-        AddAiMessage(false, "¡Hola! Soy Madsjeez AI, tu asistente para vender online. Selecciona una acción rápida o escribe tu consulta.");
+        ShowNewTabPage();
+        AddAiMessage(false, "Hola. Soy tu asistente para vender online. Elegí una acción rápida o escribí tu consulta.");
+    }
+
+    private void UpdateSystemStats()
+    {
+        try
+        {
+            using var proc = Process.GetCurrentProcess();
+            var ramMb = proc.WorkingSet64 / (1024 * 1024);
+            RamStatusText.Text = $"RAM {ramMb} MB";
+        }
+        catch
+        {
+            RamStatusText.Text = "RAM —";
+        }
+
+        CpuStatusText.Text = "CPU —";
+    }
+
+    private void ShowNewTabPage()
+    {
+        NewTabView.Visibility = Visibility.Visible;
+        WebBrowser.Visibility = Visibility.Collapsed;
+    }
+
+    private void HideNewTabPage()
+    {
+        NewTabView.Visibility = Visibility.Collapsed;
+        WebBrowser.Visibility = Visibility.Visible;
     }
 
     private async Task SyncFromApiAsync()
@@ -110,6 +154,7 @@ public partial class MainWindow : Window
                     _activeTab.IsLoading = args.IsLoading;
                     if (!args.IsLoading && WebBrowser.Address != "about:blank")
                     {
+                        HideNewTabPage();
                         _activeTab.Url = WebBrowser.Address;
                         _activeTab.Title = WebBrowser.Title ?? WebBrowser.Address;
                         UrlTextBox.Text = WebBrowser.Address;
@@ -157,17 +202,18 @@ public partial class MainWindow : Window
         TabBar.Children.Clear();
 
         foreach (var url in profile.StartupUrls)
-            CreateTab(url);
+            CreateTab(url, showNewTab: false);
 
         if (_tabs.Count == 0)
-            CreateTab(_settingsService.Settings.HomePage);
+            CreateTab("about:blank", showNewTab: true);
 
         _ = LoadFavoritesAsync();
     }
 
-    private void CreateTab(string url)
+    private void CreateTab(string url, bool? showNewTab = null)
     {
-        var tab = new BrowserTab { Url = url, Title = "Nueva pestaña" };
+        var isBlank = url == "about:blank" || string.IsNullOrWhiteSpace(url);
+        var tab = new BrowserTab { Url = isBlank ? "about:blank" : url, Title = "Nueva pestaña" };
         _tabs.Add(tab);
 
         var tabBtn = new Button
@@ -197,13 +243,15 @@ public partial class MainWindow : Window
         panel.Children.Add(tabBtn);
         panel.Children.Add(closeBtn);
 
-        var container = new Border { Child = panel, Tag = tab };
+        var container = new Border { Child = panel, Tag = tab, Background = Brushes.Transparent };
         TabBar.Children.Add(container);
 
-        SelectTab(tab);
+        SelectTab(tab, showNewTab ?? isBlank);
     }
 
-    private void SelectTab(BrowserTab tab)
+    private void NewTabBtn_Click(object sender, RoutedEventArgs e) => CreateTab("about:blank", showNewTab: true);
+
+    private void SelectTab(BrowserTab tab, bool showNewTab = false)
     {
         _activeTab = tab;
         foreach (var child in TabBar.Children)
@@ -211,14 +259,24 @@ public partial class MainWindow : Window
             if (child is Border border && border.Tag is BrowserTab t)
             {
                 border.Background = t.Id == tab.Id
-                    ? new SolidColorBrush(Color.FromRgb(30, 41, 59))
+                    ? new SolidColorBrush(Color.FromRgb(24, 26, 46))
                     : Brushes.Transparent;
             }
         }
 
-        if (WebBrowser.Address != tab.Url)
-            WebBrowser.Load(tab.Url);
-        UrlTextBox.Text = tab.Url;
+        var isBlank = tab.Url == "about:blank" || showNewTab;
+        if (isBlank)
+        {
+            ShowNewTabPage();
+            UrlTextBox.Text = string.Empty;
+        }
+        else
+        {
+            HideNewTabPage();
+            if (WebBrowser.Address != tab.Url)
+                WebBrowser.Load(tab.Url);
+            UrlTextBox.Text = tab.Url;
+        }
     }
 
     private void UpdateTabTitle(BrowserTab tab)
@@ -265,7 +323,7 @@ public partial class MainWindow : Window
     private void TabBtn_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: BrowserTab tab })
-            SelectTab(tab);
+            SelectTab(tab, tab.Url == "about:blank");
     }
 
     private void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -277,7 +335,8 @@ public partial class MainWindow : Window
     private void BackBtn_Click(object sender, RoutedEventArgs e) => WebBrowser.Back();
     private void ForwardBtn_Click(object sender, RoutedEventArgs e) => WebBrowser.Forward();
     private void ReloadBtn_Click(object sender, RoutedEventArgs e) => WebBrowser.Reload();
-    private void HomeBtn_Click(object sender, RoutedEventArgs e) => NavigateTo(_settingsService.Settings.HomePage);
+
+    private void HomeBtn_Click(object sender, RoutedEventArgs e) => NavHomeBtn_Click(sender, e);
 
     private void UrlTextBox_KeyDown(object sender, KeyEventArgs e)
     {
@@ -288,14 +347,54 @@ public partial class MainWindow : Window
     private void NavigateTo(string input)
     {
         var url = NormalizeUrl(input);
+        HideNewTabPage();
         if (_activeTab != null)
         {
             _activeTab.Url = url;
             UpdateTabTitle(_activeTab);
         }
         WebBrowser.Load(url);
-        UrlTextBox.Text = url;
+        UrlTextBox.Text = url == "about:blank" ? string.Empty : url;
     }
+
+    private void NavHomeBtn_Click(object sender, RoutedEventArgs e)
+    {
+        if (_activeTab != null)
+        {
+            _activeTab.Url = "about:blank";
+            SelectTab(_activeTab, showNewTab: true);
+        }
+        else
+            ShowNewTabPage();
+    }
+
+    private void NavAiBtn_Click(object sender, RoutedEventArgs e) => ToggleSidebar(true);
+
+    private void NavToolsBtn_Click(object sender, RoutedEventArgs e) => ProductsBtn_Click(sender, e);
+
+    private void NavSocialBtn_Click(object sender, RoutedEventArgs e) =>
+        NavigateTo("https://web.whatsapp.com");
+
+    private void NavExtensionsBtn_Click(object sender, RoutedEventArgs e) =>
+        MessageBox.Show(
+            "Las extensiones de Chrome no están disponibles en esta versión.\n\nMadsjeez usa Chromium embebido (CefSharp) sin tienda de extensiones.",
+            "Extensiones",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+
+    private void NavSettingsBtn_Click(object sender, RoutedEventArgs e) =>
+        MessageBox.Show(
+            $"Perfil activo: {_activeProfile?.Name ?? "—"}\nUsuario: {_settingsService.Settings.UserEmail}\n\nCambiá el workspace desde el selector en la barra lateral.",
+            "Ajustes",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+
+    private void NavProBtn_Click(object sender, RoutedEventArgs e) =>
+        MessageBox.Show(
+            "Madsjeez Pro estará disponible próximamente con más límites de IA y perfiles avanzados.",
+            "Madsjeez Pro",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
 
     private static string NormalizeUrl(string input)
     {
@@ -369,14 +468,9 @@ public partial class MainWindow : Window
         panel.ShowDialog();
     }
 
-    private void ToggleSidebarBtn_Click(object sender, RoutedEventArgs e)
-    {
-        ToggleSidebar(SidebarColumn.Width.Value < 10);
-    }
-
     private void ToggleSidebar(bool open)
     {
-        SidebarColumn.Width = new GridLength(open ? 360 : 0);
+        RightPanelColumn.Width = new GridLength(open ? 340 : 0);
         AiSidebar.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
         _settingsService.Settings.SidebarOpen = open;
         _settingsService.Save();
@@ -482,7 +576,7 @@ public partial class MainWindow : Window
         {
             Background = new SolidColorBrush(isUser
                 ? Color.FromRgb(99, 102, 241)
-                : Color.FromRgb(30, 41, 59)),
+                : Color.FromRgb(18, 26, 46)),
             CornerRadius = new CornerRadius(8),
             Padding = new Thickness(10, 8, 10, 8),
             Margin = new Thickness(isUser ? 20 : 0, 4, isUser ? 0 : 20, 4),

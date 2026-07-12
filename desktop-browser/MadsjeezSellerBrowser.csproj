@@ -35,6 +35,7 @@
     <Content Include="Assets\app-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\app-icon.png" />
   </ItemGroup>
 
   <ItemGroup>
