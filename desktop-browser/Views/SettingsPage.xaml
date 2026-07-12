@@ -115,7 +115,8 @@
                                FontSize="12" Margin="0,4,0,8"/>
                     <TextBlock x:Name="UpdateStatusText" TextWrapping="Wrap"
                                Foreground="{StaticResource TextSecondaryBrush}"
-                               FontSize="12" Margin="0,0,0,12"/>
+                               FontSize="12" Margin="0,0,0,12"
+                               Text="Usá el botón Actualizar en la barra lateral o buscá desde acá."/>
                     <StackPanel Orientation="Horizontal">
                         <Button Content="Buscar actualizaciones" Style="{StaticResource AiActionButton}"
                                 Width="180" Margin="0,0,8,0" Click="CheckUpdatesBtn_Click"/>

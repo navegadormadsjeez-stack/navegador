@@ -68,6 +68,18 @@
                     <Button x:Name="NavExtensionsBtn" Style="{StaticResource SideNavButton}" Click="NavExtensionsBtn_Click">
                         <TextBlock Text="Extensiones"/>
                     </Button>
+                    <Button x:Name="NavUpdateBtn" Style="{StaticResource SideNavButton}" Click="NavUpdateBtn_Click"
+                            ToolTip="Buscar e instalar actualizaciones">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Actualizar"/>
+                            <Ellipse x:Name="UpdateBadge" Grid.Column="1" Width="8" Height="8" Fill="#F59E0B"
+                                     Visibility="Collapsed" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                        </Grid>
+                    </Button>
                     <Button x:Name="NavSettingsBtn" Style="{StaticResource SideNavButton}" Click="NavSettingsBtn_Click">
                         <TextBlock Text="Ajustes"/>
                     </Button>
@@ -186,8 +198,15 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <TextBlock Text="Protección activa" FontSize="11" Foreground="{StaticResource SuccessBrush}" Margin="0,0,8,0"/>
-                        <TextBlock x:Name="VersionText" Text="v0.1.8" FontSize="11"
-                                   Foreground="{StaticResource TextMutedBrush}"/>
+                        <Button x:Name="VersionUpdateBtn" Style="{StaticResource NavButton}" Click="NavUpdateBtn_Click"
+                                ToolTip="Buscar actualizaciones" Padding="4,0" Margin="0,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="UpdateBadgeStatus" Width="6" Height="6" Fill="#F59E0B"
+                                         Visibility="Collapsed" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                <TextBlock x:Name="VersionText" Text="v0.1.8" FontSize="11"
+                                           Foreground="{StaticResource TextMutedBrush}"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>

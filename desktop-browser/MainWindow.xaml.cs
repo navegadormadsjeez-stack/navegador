@@ -26,6 +26,8 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _statusTimer = new();
     private readonly UpdateInstallerService _updateService = new();
     private bool _initializing;
+    private string? _pendingUpdateUrl;
+    private string? _pendingUpdateVersion;
 
     public MainWindow(SettingsService settings, ApiService api)
     {
@@ -39,7 +41,7 @@ public partial class MainWindow : Window
         SettingsView.ClearHistoryRequested += (_, _) => HandleClearHistory();
         SettingsView.ClearCacheRequested += (_, _) => HandleClearCache();
         SettingsView.NavigateRequested += (_, url) => NavigateTo(url);
-        SettingsView.CheckUpdatesRequested += (_, _) => _ = HandleCheckUpdatesAsync();
+        SettingsView.CheckUpdatesRequested += (_, _) => _ = HandleCheckUpdatesAsync(promptInstall: true);
         SettingsView.InstallUpdateRequested += (_, _) => _ = HandleInstallUpdateAsync();
         Loaded += MainWindow_Loaded;
         _statusTimer.Interval = TimeSpan.FromSeconds(2);
@@ -429,6 +431,9 @@ public partial class MainWindow : Window
 
     private void NavSettingsBtn_Click(object sender, RoutedEventArgs e) => ShowSettingsPage();
 
+    private async void NavUpdateBtn_Click(object sender, RoutedEventArgs e) =>
+        await HandleCheckUpdatesAsync(promptInstall: true);
+
     private void HandleSaveSettings()
     {
         _settingsService.Settings.HomePage = SettingsView.GetHomePage();
@@ -626,22 +631,39 @@ public partial class MainWindow : Window
         if (_history.Count > 500) _history.RemoveAt(0);
     }
 
-    private async Task CheckUpdatesAsync()
+    private async Task CheckUpdatesAsync() =>
+        await HandleCheckUpdatesAsync(promptInstall: false);
+
+    private static string NormalizeDownloadUrl(string? url, string version)
     {
-        var update = await _apiService.CheckForUpdatesAsync(UpdateInstallerService.GetAppVersion());
-        if (update == null)
+        if (string.IsNullOrWhiteSpace(url))
+            return $"https://github.com/navegadormadsjeez-stack/navegador/releases/download/v{version}/MadsjeezSellerBrowserSetup.exe";
+
+        if (url.Contains("catbox.moe", StringComparison.OrdinalIgnoreCase) ||
+            url.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
         {
-            StatusText.Text = "Modo offline - API no disponible";
-            return;
+            return $"https://github.com/navegadormadsjeez-stack/navegador/releases/download/v{version}/MadsjeezSellerBrowserSetup.exe";
         }
-        if (update.UpdateAvailable)
-        {
-            var latest = update.Latest?.Version ?? update.Version ?? "?";
-            StatusText.Text = $"Actualización disponible: v{latest}";
-        }
+
+        return url;
     }
 
-    private async Task HandleCheckUpdatesAsync()
+    private void SetUpdateAvailable(bool available, string? version = null, string? downloadUrl = null)
+    {
+        _pendingUpdateUrl = available ? downloadUrl : null;
+        _pendingUpdateVersion = available ? version : null;
+
+        var badge = available ? Visibility.Visible : Visibility.Collapsed;
+        UpdateBadge.Visibility = badge;
+        UpdateBadgeStatus.Visibility = badge;
+
+        var current = UpdateInstallerService.GetAppVersion();
+        VersionText.Text = available && !string.IsNullOrEmpty(version)
+            ? $"v{current} · v{version} disponible"
+            : $"v{current}";
+    }
+
+    private async Task HandleCheckUpdatesAsync(bool promptInstall)
     {
         var current = UpdateInstallerService.GetAppVersion();
         SettingsView.SetUpdateStatus("Buscando actualizaciones...", canInstall: false);
@@ -650,32 +672,66 @@ public partial class MainWindow : Window
         var update = await _apiService.CheckForUpdatesAsync(current);
         if (update == null)
         {
-            SettingsView.SetUpdateStatus(
-                "No se pudo conectar al servidor. Podés descargar el instalador desde madsjeez.com e instalarlo sobre la versión actual.",
-                canInstall: false);
+            SetUpdateAvailable(false);
+            var offlineMsg =
+                "No se pudo conectar al servidor. Podés descargar el instalador desde madsjeez.com e instalarlo sobre la versión actual.";
+            SettingsView.SetUpdateStatus(offlineMsg, canInstall: false);
             StatusText.Text = "Sin conexión para buscar actualizaciones";
+            if (promptInstall)
+            {
+                MessageBox.Show(
+                    offlineMsg,
+                    "Actualizar",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
             return;
         }
 
         if (!update.UpdateAvailable)
         {
+            SetUpdateAvailable(false);
             SettingsView.SetUpdateStatus($"Tenés la última versión (v{current}).", canInstall: false);
             StatusText.Text = "Estás al día";
+            if (promptInstall)
+            {
+                MessageBox.Show(
+                    $"Tenés la última versión instalada (v{current}).",
+                    "Actualizar",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
             return;
         }
 
         var latestVersion = update.Latest?.Version ?? update.Version ?? "?";
-        var downloadUrl = update.Latest?.DownloadUrl ?? update.DownloadUrl;
+        var downloadUrl = NormalizeDownloadUrl(
+            update.Latest?.DownloadUrl ?? update.DownloadUrl,
+            latestVersion);
+
+        SetUpdateAvailable(true, latestVersion, downloadUrl);
         SettingsView.SetUpdateStatus(
             $"Hay una nueva versión: v{latestVersion} (actual: v{current}). Podés instalarla sin desinstalar la anterior.",
             canInstall: !string.IsNullOrEmpty(downloadUrl),
             downloadUrl);
         StatusText.Text = $"Actualización disponible: v{latestVersion}";
+
+        if (promptInstall && !string.IsNullOrEmpty(downloadUrl))
+        {
+            var confirm = MessageBox.Show(
+                $"Hay una nueva versión: v{latestVersion}\nVersión actual: v{current}\n\n" +
+                "Se descargará el instalador y se cerrará el navegador para actualizar.\n\n¿Instalar ahora?",
+                "Actualización disponible",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (confirm == MessageBoxResult.Yes)
+                await InstallUpdateAsync(downloadUrl);
+        }
     }
 
     private async Task HandleInstallUpdateAsync()
     {
-        var downloadUrl = SettingsView.GetPendingUpdateUrl();
+        var downloadUrl = _pendingUpdateUrl ?? SettingsView.GetPendingUpdateUrl();
         if (string.IsNullOrEmpty(downloadUrl))
         {
             MessageBox.Show(
@@ -693,22 +749,39 @@ public partial class MainWindow : Window
             MessageBoxImage.Question);
         if (confirm != MessageBoxResult.Yes) return;
 
+        await InstallUpdateAsync(downloadUrl);
+    }
+
+    private async Task InstallUpdateAsync(string downloadUrl)
+    {
         try
         {
             StatusText.Text = "Descargando actualización...";
             SettingsView.SetUpdateStatus("Descargando actualización...", canInstall: false);
+            NavUpdateBtn.IsEnabled = false;
+            VersionUpdateBtn.IsEnabled = false;
+
             var setupPath = await _updateService.DownloadAndExtractInstallerAsync(downloadUrl);
             _updateService.LaunchInstaller(setupPath);
             Application.Current.Shutdown();
         }
         catch (Exception ex)
         {
+            NavUpdateBtn.IsEnabled = true;
+            VersionUpdateBtn.IsEnabled = true;
             MessageBox.Show(
                 $"No se pudo descargar la actualización:\n\n{ex.Message}\n\nTambién podés descargar el instalador manualmente desde la web e instalarlo sobre la versión actual.",
                 "Error de actualización",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             StatusText.Text = "Error al descargar actualización";
+            if (!string.IsNullOrEmpty(_pendingUpdateVersion) && !string.IsNullOrEmpty(_pendingUpdateUrl))
+            {
+                SettingsView.SetUpdateStatus(
+                    $"Hay una nueva versión: v{_pendingUpdateVersion}. Reintentá la instalación.",
+                    canInstall: true,
+                    _pendingUpdateUrl);
+            }
         }
     }
 
