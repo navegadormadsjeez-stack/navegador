@@ -2,9 +2,12 @@ export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'https://navegador-production.up.railway.app/api/v1';
 
 export const FALLBACK_DOWNLOAD_URL =
-  process.env.NEXT_PUBLIC_DOWNLOAD_URL || 'https://files.catbox.moe/duyrzt.zip';
+  process.env.NEXT_PUBLIC_DOWNLOAD_URL ||
+  'https://files.catbox.moe/qq3zsw.zip';
 
-/** Ruta estable: redirige al ZIP más reciente (API o fallback). */
+export const DOWNLOAD_FILENAME = 'MadsjeezSellerBrowserSetup.exe';
+
+/** Ruta estable: redirige al instalador .exe más reciente (API o fallback). */
 export const DOWNLOAD_ROUTE = '/api/download';
 
 export interface DownloadInfo {
@@ -31,6 +34,6 @@ export async function fetchDownloadInfo(): Promise<DownloadInfo> {
     version: '0.1.0',
     title: 'Madsjeez Seller Browser MVP',
     downloadUrl: FALLBACK_DOWNLOAD_URL,
-    fileSize: 144720011,
+    fileSize: 102333160,
   };
 }

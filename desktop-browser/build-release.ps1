@@ -1,5 +1,5 @@
-# Madsjeez Seller Browser - Release build
-# Produces a ~138 MB ZIP (framework-dependent) ready to distribute.
+# Madsjeez Seller Browser - Release build (ZIP legacy)
+# Para instalador estilo Chrome (.exe) usar: .\build-setup.ps1
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = $PSScriptRoot

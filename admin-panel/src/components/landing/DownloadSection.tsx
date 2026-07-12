@@ -43,7 +43,7 @@ export function DownloadSection() {
               <DownloadButton variant="large" />
 
               <p className="mt-4 text-zinc-500 text-sm">
-                {sizeMB} MB · ZIP · Windows 10/11 x64
+                {sizeMB} MB · Instalador .exe · Windows 10/11 x64
               </p>
 
               {info.title && (
@@ -58,9 +58,9 @@ export function DownloadSection() {
 
           <div className="mt-10 grid sm:grid-cols-3 gap-6 text-left">
             {[
-              { step: '1', text: 'Descargá y extraé el ZIP' },
-              { step: '2', text: 'Ejecutá Instalar.bat o el .exe' },
-              { step: '3', text: 'Iniciá sesión y elegí tu perfil' },
+              { step: '1', text: 'Descargá el instalador .exe' },
+              { step: '2', text: 'Ejecutalo y confirmá la instalación' },
+              { step: '3', text: 'Abrí Madsjeez desde el escritorio' },
             ].map(({ step, text }) => (
               <div key={step} className="flex items-start gap-3">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-white text-xs font-medium">

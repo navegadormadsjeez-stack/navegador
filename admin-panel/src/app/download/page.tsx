@@ -14,7 +14,7 @@ export default function DownloadPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const sizeMB = info?.fileSize ? (info.fileSize / (1024 * 1024)).toFixed(0) : '~138';
+  const sizeMB = info?.fileSize ? (info.fileSize / (1024 * 1024)).toFixed(0) : '~98';
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center p-6">
@@ -35,24 +35,24 @@ export default function DownloadPage() {
               <p className="text-sm text-zinc-500">Versión</p>
               <p className="text-xl font-semibold">v{info.version ?? '0.1.0'}</p>
               <p className="text-zinc-300 text-sm mt-2">{info.title}</p>
-              <p className="text-zinc-500 text-xs mt-1">{sizeMB} MB · Windows 64-bit</p>
+              <p className="text-zinc-500 text-xs mt-1">
+                {sizeMB} MB · Instalador .exe · Windows 64-bit
+              </p>
             </div>
 
             <DownloadButton
               variant="primary"
               className="w-full justify-center text-base"
+              label="Descargar instalador"
             />
 
             <div className="text-sm text-zinc-400 space-y-2">
-              <p className="font-medium text-zinc-300">Instalación:</p>
+              <p className="font-medium text-zinc-300">Instalación (como Chrome):</p>
               <ol className="list-decimal list-inside space-y-1 text-zinc-500">
-                <li>Extrae el ZIP descargado</li>
+                <li>Descargá el archivo .exe</li>
+                <li>Hacé doble clic y confirmá la instalación</li>
                 <li>
-                  Ejecuta <code className="text-zinc-300">Instalar.bat</code> o{' '}
-                  <code className="text-zinc-300">MadsjeezSellerBrowser.exe</code>
-                </li>
-                <li>
-                  Instala{' '}
+                  Si pide runtime, instalá{' '}
                   <a
                     href="https://dotnet.microsoft.com/download/dotnet/8.0"
                     target="_blank"
@@ -60,10 +60,9 @@ export default function DownloadPage() {
                     className="text-indigo-400 hover:underline"
                   >
                     .NET 8 Desktop Runtime
-                  </a>{' '}
-                  si te lo pide
+                  </a>
                 </li>
-                <li>Inicia sesión o crea tu cuenta</li>
+                <li>Abrí el acceso directo del escritorio e iniciá sesión</li>
               </ol>
             </div>
 

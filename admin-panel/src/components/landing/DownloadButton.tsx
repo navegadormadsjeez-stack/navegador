@@ -2,7 +2,7 @@
 
 import { clsx } from 'clsx';
 import { Download } from 'lucide-react';
-import { DOWNLOAD_ROUTE } from '@/lib/download';
+import { DOWNLOAD_ROUTE, DOWNLOAD_FILENAME } from '@/lib/download';
 
 type Variant = 'primary' | 'nav' | 'large';
 
@@ -31,7 +31,7 @@ export function DownloadButton({
     <a
       href={DOWNLOAD_ROUTE}
       className={clsx(styles[variant], className)}
-      download="MadsjeezSellerBrowser-v0.1.0-win-x64.zip"
+      download={DOWNLOAD_FILENAME}
     >
       {showIcon && <Download size={variant === 'large' ? 22 : 18} />}
       {label}

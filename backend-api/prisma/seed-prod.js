@@ -70,9 +70,9 @@ async function main() {
       title: 'Madsjeez Seller Browser MVP',
       description:
         'Initial release with browser, workspaces, AI sidebar, and product management.',
-      downloadUrl: 'https://files.catbox.moe/duyrzt.zip',
-      checksum: 'sha256:eef08900cb340a09acb668244d513aff1784458a1a8c12d15e60f73afe203d9b',
-      fileSize: BigInt(144720011),
+      downloadUrl: 'https://files.catbox.moe/qq3zsw.zip',
+      checksum: 'sha256:91edaa719e72726c57a6dca8c1f6605f1952c9a5afd61964c10552492dd4a3b1',
+      fileSize: BigInt(102333160),
       channel: 'STABLE',
     },
     create: {
@@ -81,9 +81,9 @@ async function main() {
       description:
         'Initial release with browser, workspaces, AI sidebar, and product management.',
       downloadUrl:
-        'https://files.catbox.moe/duyrzt.zip',
-      checksum: 'sha256:eef08900cb340a09acb668244d513aff1784458a1a8c12d15e60f73afe203d9b',
-      fileSize: BigInt(144720011),
+        'https://files.catbox.moe/qq3zsw.zip',
+      checksum: 'sha256:91edaa719e72726c57a6dca8c1f6605f1952c9a5afd61964c10552492dd4a3b1',
+      fileSize: BigInt(102333160),
       channel: 'STABLE',
     },
   });

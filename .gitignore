@@ -39,6 +39,10 @@ desktop-browser/cefsharp/
 desktop-browser/publish/
 desktop-browser/release/
 downloads-host/*.zip
+downloads-host/*.exe
+desktop-browser/.setup-stage/
+desktop-browser/.setup-stage.7z
+desktop-browser/.setup-config.txt
 
 # Downloads host (ZIP uploaded separately to Railway/CDN)
 
