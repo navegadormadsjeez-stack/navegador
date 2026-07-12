@@ -62,6 +62,7 @@ export default function DownloadPage() {
                     .NET 8 Desktop Runtime
                   </a>
                 </li>
+                <li>Se crea el icono Madsjeez Seller Browser en el escritorio</li>
                 <li>Al terminar, el navegador se abre solo — iniciá sesión</li>
               </ol>
             </div>

@@ -36,6 +36,7 @@ New-Item -ItemType Directory -Force -Path $StageDir | Out-Null
 
 Copy-Item -Path "$PublishDir\*" -Destination $StageDir -Recurse -Force
 Copy-Item (Join-Path $ProjectRoot "installer\Instalar.bat") $StageDir -Force
+Copy-Item (Join-Path $ProjectRoot "installer\CreateShortcuts.ps1") $StageDir -Force
 
 if (Test-Path $ArchivePath) { Remove-Item $ArchivePath -Force }
 

@@ -59,7 +59,7 @@ export function DownloadSection() {
           <div className="mt-10 grid sm:grid-cols-3 gap-6 text-left">
             {[
               { step: '1', text: 'Descargá el instalador .exe' },
-              { step: '2', text: 'Ejecutalo y confirmá la instalación' },
+              { step: '2', text: 'Se crea el icono en el escritorio' },
               { step: '3', text: 'El navegador se abre solo al terminar' },
             ].map(({ step, text }) => (
               <div key={step} className="flex items-start gap-3">

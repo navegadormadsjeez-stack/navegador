@@ -28,8 +28,6 @@ if errorlevel 1 (
 )
 
 set "INSTALL_DIR=%LOCALAPPDATA%\Programs\MadsjeezSellerBrowser"
-set "DESKTOP=%USERPROFILE%\Desktop"
-set "STARTMENU=%APPDATA%\Microsoft\Windows\Start Menu\Programs"
 
 if "%SILENT%"=="0" echo Instalando en: %INSTALL_DIR%
 if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
@@ -37,21 +35,24 @@ if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
 if "%SILENT%"=="0" echo Copiando archivos...
 xcopy /E /Y /I /Q "%~dp0*" "%INSTALL_DIR%\" >nul 2>&1
 del "%INSTALL_DIR%\Instalar.bat" >nul 2>&1
+del "%INSTALL_DIR%\CreateShortcuts.ps1" >nul 2>&1
 del "%INSTALL_DIR%\LEEME.txt" >nul 2>&1
 
-powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%DESKTOP%\Madsjeez Seller Browser.lnk'); $s.TargetPath = '%INSTALL_DIR%\MadsjeezSellerBrowser.exe'; $s.WorkingDirectory = '%INSTALL_DIR%'; $s.Description = 'Madsjeez Seller Browser'; $s.IconLocation = '%INSTALL_DIR%\MadsjeezSellerBrowser.exe,0'; $s.Save()"
-
-if not exist "%STARTMENU%\Madsjeez" mkdir "%STARTMENU%\Madsjeez"
-powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%STARTMENU%\Madsjeez\Madsjeez Seller Browser.lnk'); $s.TargetPath = '%INSTALL_DIR%\MadsjeezSellerBrowser.exe'; $s.WorkingDirectory = '%INSTALL_DIR%'; $s.Description = 'Madsjeez Seller Browser'; $s.IconLocation = '%INSTALL_DIR%\MadsjeezSellerBrowser.exe,0'; $s.Save()"
+if "%SILENT%"=="0" echo Creando acceso directo en el escritorio...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0CreateShortcuts.ps1" -InstallDir "%INSTALL_DIR%"
+if errorlevel 1 (
+  echo [ERROR] No se pudo crear el acceso directo.
+  exit /b 1
+)
 
 if "%SILENT%"=="0" (
   echo.
   echo  Instalacion completada!
-  echo  Abriendo Madsjeez Seller Browser...
+  echo  Icono creado en el escritorio: Madsjeez Seller Browser
+  echo  Abriendo el navegador...
   echo.
 )
 
-rem Esperar a que Windows libere los archivos copiados
 timeout /t 2 /nobreak >nul
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -LiteralPath '%INSTALL_DIR%\MadsjeezSellerBrowser.exe' -WorkingDirectory '%INSTALL_DIR%'"
