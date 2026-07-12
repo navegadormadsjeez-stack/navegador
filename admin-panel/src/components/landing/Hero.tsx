@@ -39,7 +39,7 @@ export function Hero() {
 
           <p className="mt-6 flex items-center gap-2 text-xs text-muted sm:text-sm">
             <Monitor size={14} aria-hidden />
-            Windows 10/11 x64 · Requiere .NET 8 Desktop Runtime
+            Windows 10/11 x64 · .NET incluido en el instalador
           </p>
         </FadeIn>
 

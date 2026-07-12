@@ -36,7 +36,7 @@ export function FinalCTA() {
 
             <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted sm:text-sm">
               <Monitor size={14} aria-hidden />
-              v{info?.version ?? APP_VERSION} · {sizeMB} MB · Windows 10/11 x64 · .NET 8 Runtime
+              v{info?.version ?? APP_VERSION} · {sizeMB} MB · Windows 10/11 x64
             </p>
           </div>
         </FadeIn>

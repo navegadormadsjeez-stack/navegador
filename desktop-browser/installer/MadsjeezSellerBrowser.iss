@@ -43,7 +43,7 @@ ChangesAssociations=no
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [CustomMessages]
-spanish.WelcomeLabel2=Esto instalará [name/ver] en su equipo.%n%nNavegador para vendedores en MercadoLibre y marketplaces de Latinoamérica.%n%nSe crearán accesos directos en el escritorio y menú Inicio.
+spanish.WelcomeLabel2=Esto instalará [name/ver] en su equipo.%n%nNavegador para vendedores en MercadoLibre y marketplaces de Latinoamérica.%n%nIncluye todo lo necesario para ejecutarse: no hace falta instalar .NET por separado.%n%nSe crearán accesos directos en el escritorio y menú Inicio.
 spanish.FinishedLabel=La instalación de [name] se completó correctamente.%n%nHaga clic en Finalizar para abrir el navegador.
 spanish.FinishedHeadingLabel=Instalación completada
 
@@ -62,30 +62,3 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Abrir {#MyAppName}"; Flags: now
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
-
-[Code]
-function DotNet8DesktopInstalled: Boolean;
-var
-  ResultCode: Integer;
-begin
-  Result := Exec('cmd.exe',
-    '/c dotnet --list-runtimes 2>nul | findstr /C:"Microsoft.WindowsDesktop.App 8." >nul',
-    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  if Result then
-    Result := (ResultCode = 0);
-end;
-
-function InitializeSetup: Boolean;
-begin
-  Result := True;
-  if not DotNet8DesktopInstalled then
-  begin
-    if MsgBox(
-      'No se detectó .NET 8 Desktop Runtime en este equipo.' + #13#10 + #13#10 +
-      'Descarguelo gratis desde:' + #13#10 +
-      'https://dotnet.microsoft.com/download/dotnet/8.0' + #13#10 + #13#10 +
-      '¿Desea continuar con la instalación de todos modos?',
-      mbConfirmation, MB_YESNO) = IDNO then
-      Result := False;
-  end;
-end;

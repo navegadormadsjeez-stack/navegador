@@ -125,7 +125,7 @@ Genera `desktop-browser/release/MadsjeezSellerBrowserSetup.exe` con:
 - Acceso directo en escritorio y menú Inicio
 - Entrada en **Agregar o quitar programas**
 - Apertura automática al terminar
-- Verificación de .NET 8 Desktop Runtime
+- Verificación incluida: .NET embebido (self-contained), sin dependencias extra
 
 ### Firma gratuita (SmartScreen)
 

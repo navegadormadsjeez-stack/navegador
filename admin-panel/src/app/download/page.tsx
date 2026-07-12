@@ -74,17 +74,7 @@ export default function DownloadPage() {
                 <ol className="list-inside list-decimal space-y-1.5">
                   <li>Descargá el instalador .exe</li>
                   <li>Seguí el asistente (Siguiente → Instalar → Finalizar)</li>
-                  <li>
-                    Si lo pide, instalá{' '}
-                    <a
-                      href="https://dotnet.microsoft.com/download/dotnet/8.0"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-brand underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 rounded-sm"
-                    >
-                      .NET 8 Desktop Runtime
-                    </a>
-                  </li>
+                  <li>No hace falta instalar .NET: viene incluido en el instalador</li>
                   <li>Se crea el acceso directo en el escritorio y menú Inicio</li>
                   <li>Al terminar, marcá “Abrir Madsjeez Seller Browser” o Finalizar</li>
                 </ol>

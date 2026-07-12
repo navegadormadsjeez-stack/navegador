@@ -121,7 +121,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: '¿Qué necesito para instalarlo?',
-    a: 'Windows 10 u 11 de 64 bits y .NET 8 Desktop Runtime. El instalador es un asistente gráfico estándar: elegís la carpeta, confirmás y el navegador se abre al terminar. Aparece en Agregar o quitar programas.',
+    a: 'Windows 10 u 11 de 64 bits. El instalador incluye todo lo necesario (no hace falta instalar .NET por separado). Asistente gráfico estándar: confirmás y el navegador se abre al terminar.',
   },
   {
     q: 'Windows muestra "protegió su PC" al instalar. ¿Es seguro?',

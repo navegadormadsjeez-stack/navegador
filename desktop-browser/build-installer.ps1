@@ -28,12 +28,13 @@ if (-not (Test-Path $Iscc)) {
     exit 1
 }
 
-Write-Host "Publishing win-x64..." -ForegroundColor Yellow
+Write-Host "Publishing win-x64 (self-contained, .NET incluido)..." -ForegroundColor Yellow
 dotnet publish "$ProjectRoot\MadsjeezSellerBrowser.csproj" `
     -c Release `
     -r win-x64 `
-    --self-contained false `
+    --self-contained true `
     -p:PublishSingleFile=false `
+    -p:PublishReadyToRun=true `
     -o $PublishDir
 
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
