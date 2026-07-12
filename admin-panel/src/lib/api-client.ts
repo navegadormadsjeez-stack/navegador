@@ -1,17 +1,16 @@
+'use client';
+
+import { getToken } from './auth';
+
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   'https://navegador-production.up.railway.app/api/v1';
 
-function getClientToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('madsjeez_access_token');
-}
-
-export async function fetchApi<T>(
+export async function fetchApiClient<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T | null> {
-  const token = getClientToken();
+  const token = getToken();
   try {
     const res = await fetch(`${API_URL}${path}`, {
       ...options,
@@ -29,17 +28,18 @@ export async function fetchApi<T>(
   }
 }
 
-export interface DashboardStats {
-  totalUsers: number;
-  activeUsers: number;
-  proUsers: number;
-  aiRequestsToday: number;
-}
-
-export interface AiStats {
-  total: number;
-  last24h: number;
-  byType: Array<{ type: string; _count: number }>;
+export async function loginAdmin(email: string, password: string) {
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) return null;
+  return res.json() as Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: { id: string; email: string };
+  }>;
 }
 
 export { API_URL };

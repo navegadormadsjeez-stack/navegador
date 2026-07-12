@@ -1,6 +1,8 @@
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using MadsjeezSellerBrowser.Models;
 using MadsjeezSellerBrowser.Services;
 
 namespace MadsjeezSellerBrowser.Views;
@@ -14,6 +16,7 @@ public class ProductsPanel : Window
     private readonly TextBox _priceInput;
     private readonly TextBox _stockInput;
     private readonly TextBox _descInput;
+    private List<ApiProduct> _products = new();
 
     public ProductsPanel(ApiService api, SettingsService settings)
     {
@@ -21,8 +24,8 @@ public class ProductsPanel : Window
         _settings = settings;
 
         Title = "📦 Productos - Madsjeez";
-        Width = 600;
-        Height = 500;
+        Width = 640;
+        Height = 520;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         Background = new SolidColorBrush(Color.FromRgb(26, 26, 46));
 
@@ -33,7 +36,7 @@ public class ProductsPanel : Window
 
         var title = new TextBlock
         {
-            Text = "Catálogo de Productos",
+            Text = "Catálogo de Productos (nube)",
             FontSize = 18,
             FontWeight = FontWeights.Bold,
             Foreground = Brushes.White,
@@ -48,6 +51,7 @@ public class ProductsPanel : Window
             Foreground = Brushes.White,
             BorderThickness = new Thickness(0),
         };
+        _productList.MouseDoubleClick += async (_, _) => await DeleteSelectedProductAsync();
         Grid.SetRow(_productList, 1);
         grid.Children.Add(_productList);
 
@@ -64,28 +68,42 @@ public class ProductsPanel : Window
         form.Children.Add(_stockInput);
         form.Children.Add(_descInput);
 
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal };
         var addBtn = new Button
         {
             Content = "+ Agregar producto",
             Background = new SolidColorBrush(Color.FromRgb(99, 102, 241)),
             Foreground = Brushes.White,
             Padding = new Thickness(16, 8, 16, 8),
+            Margin = new Thickness(0, 8, 8, 0),
+            BorderThickness = new Thickness(0),
+            Cursor = System.Windows.Input.Cursors.Hand,
+        };
+        addBtn.Click += async (_, _) => await AddProductAsync();
+        buttons.Children.Add(addBtn);
+
+        var refreshBtn = new Button
+        {
+            Content = "↻ Actualizar",
+            Background = new SolidColorBrush(Color.FromRgb(51, 65, 85)),
+            Foreground = Brushes.White,
+            Padding = new Thickness(16, 8, 16, 8),
             Margin = new Thickness(0, 8, 0, 0),
             BorderThickness = new Thickness(0),
             Cursor = System.Windows.Input.Cursors.Hand,
         };
-        addBtn.Click += (_, _) => AddLocalProduct();
-        form.Children.Add(addBtn);
+        refreshBtn.Click += async (_, _) => await LoadProductsAsync();
+        buttons.Children.Add(refreshBtn);
 
+        form.Children.Add(buttons);
         grid.Children.Add(form);
         Content = grid;
 
-        LoadLocalProducts();
+        Loaded += async (_, _) => await LoadProductsAsync();
     }
 
-    private static TextBox CreateInput(string placeholder)
-    {
-        return new TextBox
+    private static TextBox CreateInput(string placeholder) =>
+        new()
         {
             Tag = placeholder,
             Text = placeholder,
@@ -95,25 +113,54 @@ public class ProductsPanel : Window
             Padding = new Thickness(8),
             Margin = new Thickness(0, 0, 0, 6),
         };
+
+    private static string GetInput(TextBox box, string placeholder) =>
+        box.Text == placeholder ? string.Empty : box.Text.Trim();
+
+    private async Task LoadProductsAsync()
+    {
+        _productList.Items.Clear();
+        var workspaceId = _settings.Settings.ActiveWorkspaceId;
+        _products = await _api.GetProductsAsync(workspaceId);
+        foreach (var p in _products)
+            _productList.Items.Add($"📦 {p.Name} - ${p.Price:N0} - Stock: {p.Stock}");
+        if (_products.Count == 0)
+            _productList.Items.Add("(Sin productos — agrega uno abajo)");
     }
 
-    private void LoadLocalProducts()
+    private async Task AddProductAsync()
     {
-        _productList.Items.Add("📦 Producto demo - $15.999 - Stock: 10");
-        _productList.Items.Add("📦 Aceite Natural 500ml - $8.500 - Stock: 25");
-    }
+        var name = GetInput(_nameInput, "Nombre del producto");
+        if (string.IsNullOrWhiteSpace(name)) return;
 
-    private void AddLocalProduct()
-    {
-        var name = _nameInput.Text;
-        var price = _priceInput.Text;
-        var stock = _stockInput.Text;
-        if (string.IsNullOrWhiteSpace(name) || name == "Nombre del producto") return;
+        if (!decimal.TryParse(GetInput(_priceInput, "Precio"), NumberStyles.Any, CultureInfo.InvariantCulture, out var price))
+            price = 0;
+        if (!int.TryParse(GetInput(_stockInput, "Stock"), out var stock))
+            stock = 0;
 
-        _productList.Items.Add($"📦 {name} - ${price} - Stock: {stock}");
+        var desc = GetInput(_descInput, "Descripción");
+        var created = await _api.CreateProductAsync(name, price, stock, desc, _settings.Settings.ActiveWorkspaceId);
+        if (created == null)
+        {
+            MessageBox.Show("No se pudo crear el producto. Verifica tu sesión.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
         _nameInput.Text = "Nombre del producto";
         _priceInput.Text = "Precio";
         _stockInput.Text = "Stock";
         _descInput.Text = "Descripción";
+        await LoadProductsAsync();
+    }
+
+    private async Task DeleteSelectedProductAsync()
+    {
+        var idx = _productList.SelectedIndex;
+        if (idx < 0 || idx >= _products.Count) return;
+        var product = _products[idx];
+        if (MessageBox.Show($"¿Eliminar '{product.Name}'?", "Confirmar", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+            return;
+        await _api.DeleteProductAsync(product.Id);
+        await LoadProductsAsync();
     }
 }

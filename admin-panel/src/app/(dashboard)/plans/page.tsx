@@ -1,24 +1,55 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { fetchApi } from '@/lib/api';
 
-export default async function PlansPage() {
-  const stats = await fetchApi<Array<{ plan: string; _count: number; _sum: { aiRequestsUsed: number | null } }>>('/subscriptions/stats');
+export default function PlansPage() {
+  const [stats, setStats] = useState<
+    Array<{ plan: string; _count: number; _sum: { aiRequestsUsed: number | null } }>
+  >([]);
+
+  useEffect(() => {
+    fetchApi<
+      Array<{ plan: string; _count: number; _sum: { aiRequestsUsed: number | null } }>
+    >('/subscriptions/stats').then((data) => {
+      if (data) setStats(data);
+    });
+  }, []);
 
   const plans = [
-    { name: 'Gratuito', key: 'FREE', limit: 50, price: '$0', features: ['50 requests IA/mes', '2 workspaces', 'Navegador completo'] },
-    { name: 'Pro', key: 'PRO', limit: 500, price: '$19/mes', features: ['500 requests IA/mes', '10 workspaces', 'Soporte prioritario', 'Productos ilimitados'] },
-    { name: 'Empresarial', key: 'ENTERPRISE', limit: 10000, price: '$99/mes', features: ['10.000 requests IA/mes', 'Workspaces ilimitados', 'API dedicada', 'CRM (próximamente)'] },
+    {
+      name: 'Gratuito',
+      key: 'FREE',
+      limit: 50,
+      price: '$0',
+      features: ['50 requests IA/mes', '2 workspaces', 'Navegador completo'],
+    },
+    {
+      name: 'Pro',
+      key: 'PRO',
+      limit: 500,
+      price: '$19/mes',
+      features: ['500 requests IA/mes', '10 workspaces', 'Soporte prioritario', 'Productos ilimitados'],
+    },
+    {
+      name: 'Empresarial',
+      key: 'ENTERPRISE',
+      limit: 10000,
+      price: '$99/mes',
+      features: ['10.000 requests IA/mes', 'Workspaces ilimitados', 'API dedicada', 'CRM (próximamente)'],
+    },
   ];
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Planes de suscripción</h1>
+        <h1 className="text-2xl font-bold text-white">Planes de suscripción</h1>
         <p className="text-slate-400 mt-1">Gestión de planes y límites</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {plans.map((plan) => {
-          const stat = stats?.find((s) => s.plan === plan.key);
+          const stat = stats.find((s) => s.plan === plan.key);
           return (
             <div key={plan.key} className="bg-slate-900 rounded-xl border border-slate-800 p-6">
               <h2 className="text-xl font-bold text-white">{plan.name}</h2>

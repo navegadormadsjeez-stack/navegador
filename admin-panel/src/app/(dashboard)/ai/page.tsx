@@ -1,12 +1,19 @@
-import { fetchApi, AiStats } from '@/lib/api';
+'use client';
 
-export default async function AiPage() {
-  const stats = await fetchApi<AiStats>('/ai/stats');
+import { useEffect, useState } from 'react';
+import { AiStats, fetchApi } from '@/lib/api';
+
+export default function AiPage() {
+  const [stats, setStats] = useState<AiStats | null>(null);
+
+  useEffect(() => {
+    fetchApi<AiStats>('/ai/stats').then(setStats);
+  }, []);
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Consumo de IA</h1>
+        <h1 className="text-2xl font-bold text-white">Consumo de IA</h1>
         <p className="text-slate-400 mt-1">Estadísticas de uso del asistente Madsjeez AI</p>
       </div>
 
@@ -22,7 +29,7 @@ export default async function AiPage() {
       </div>
 
       <div className="bg-slate-900 rounded-xl border border-slate-800 p-6">
-        <h2 className="text-lg font-semibold mb-4">Por tipo de request</h2>
+        <h2 className="text-lg font-semibold mb-4 text-white">Por tipo de request</h2>
         {stats?.byType && stats.byType.length > 0 ? (
           <div className="space-y-3">
             {stats.byType.map((item) => (

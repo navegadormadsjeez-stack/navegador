@@ -3,6 +3,7 @@ namespace MadsjeezSellerBrowser.Models;
 public class BrowserProfile
 {
     public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string? WorkspaceId { get; set; }
     public string Name { get; set; } = "Default";
     public string Slug { get; set; } = "default";
     public string Color { get; set; } = "#6366f1";
@@ -27,6 +28,7 @@ public class HistoryEntry
 
 public class FavoriteEntry
 {
+    public string? Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
 }
@@ -55,6 +57,11 @@ public class AppSettings
     public string HomePage { get; set; } = "https://www.madsjeez.com";
     public string SearchEngine { get; set; } = "google";
     public string? ActiveProfileId { get; set; }
-    public string ApiBaseUrl { get; set; } = "http://localhost:3001/api/v1";
+    public string ApiBaseUrl { get; set; } = "https://navegador-production.up.railway.app/api/v1";
     public string? AccessToken { get; set; }
+    public string? RefreshToken { get; set; }
+    public string? UserEmail { get; set; }
+    public string? UserName { get; set; }
+    public string? UserId { get; set; }
+    public string? ActiveWorkspaceId { get; set; }
 }

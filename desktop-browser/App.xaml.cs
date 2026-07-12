@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using CefSharp;
 using MadsjeezSellerBrowser.Services;
+using MadsjeezSellerBrowser.Views;
 
 namespace MadsjeezSellerBrowser;
 
@@ -12,7 +13,30 @@ public partial class App : Application
 
         CefSharpInitializer.Initialize();
 
-        var mainWindow = new MainWindow();
+        var settings = new SettingsService();
+        var api = new ApiService(settings);
+
+        if (string.IsNullOrEmpty(settings.Settings.AccessToken))
+        {
+            var login = new LoginWindow(settings, api);
+            if (login.ShowDialog() != true)
+            {
+                Shutdown();
+                return;
+            }
+        }
+        else if (!api.IsAuthenticated)
+        {
+            api.ClearAuth();
+            var login = new LoginWindow(settings, api);
+            if (login.ShowDialog() != true)
+            {
+                Shutdown();
+                return;
+            }
+        }
+
+        var mainWindow = new MainWindow(settings, api);
         mainWindow.Show();
     }
 

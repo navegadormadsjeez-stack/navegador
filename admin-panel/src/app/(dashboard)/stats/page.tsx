@@ -1,12 +1,27 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { fetchApi } from '@/lib/api';
 
-export default async function StatsPage() {
-  const telemetry = await fetchApi<{ total: number; errors: number; byType: Array<{ eventType: string; _count: number }> }>('/telemetry/stats');
+export default function StatsPage() {
+  const [telemetry, setTelemetry] = useState<{
+    total: number;
+    errors: number;
+    byType: Array<{ eventType: string; _count: number }>;
+  } | null>(null);
+
+  useEffect(() => {
+    fetchApi<{
+      total: number;
+      errors: number;
+      byType: Array<{ eventType: string; _count: number }>;
+    }>('/telemetry/stats').then(setTelemetry);
+  }, []);
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Estadísticas</h1>
+        <h1 className="text-2xl font-bold text-white">Estadísticas</h1>
         <p className="text-slate-400 mt-1">Telemetría y rendimiento del sistema</p>
       </div>
 
@@ -27,7 +42,7 @@ export default async function StatsPage() {
 
       {telemetry?.byType && telemetry.byType.length > 0 && (
         <div className="bg-slate-900 rounded-xl border border-slate-800 p-6">
-          <h2 className="text-lg font-semibold mb-4">Eventos por tipo</h2>
+          <h2 className="text-lg font-semibold mb-4 text-white">Eventos por tipo</h2>
           <div className="space-y-2">
             {telemetry.byType.map((item) => (
               <div key={item.eventType} className="flex justify-between">

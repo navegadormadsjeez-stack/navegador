@@ -12,6 +12,8 @@ import {
   BarChart3,
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { clearAuth, getEmail } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -25,6 +27,13 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const email = getEmail();
+
+  function handleLogout() {
+    clearAuth();
+    router.replace('/login');
+  }
 
   return (
     <aside className="w-64 bg-slate-900 border-r border-slate-800 min-h-screen flex flex-col">
@@ -56,7 +65,15 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-slate-800">
+      <div className="p-4 border-t border-slate-800 space-y-2">
+        {email && <p className="text-slate-400 text-xs truncate">{email}</p>}
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="text-slate-500 hover:text-white text-xs"
+        >
+          Cerrar sesión
+        </button>
         <p className="text-slate-500 text-xs">Madsjeez Seller Browser v0.1.0</p>
       </div>
     </aside>

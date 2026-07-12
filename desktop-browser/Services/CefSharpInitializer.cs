@@ -1,4 +1,3 @@
-using System.IO;
 using CefSharp;
 using CefSharp.Wpf;
 
@@ -14,9 +13,6 @@ public static class CefSharpInitializer
 
         var settings = new CefSettings
         {
-            CachePath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "MadsjeezSellerBrowser", "Cache"),
             LogSeverity = LogSeverity.Warning,
             UserAgent = "MadsjeezSellerBrowser/0.1.0 (Windows; Seller OS)",
         };
@@ -26,14 +22,5 @@ public static class CefSharpInitializer
 
         Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
         _initialized = true;
-    }
-
-    public static void SetProfileCachePath(string profileId)
-    {
-        var cachePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "MadsjeezSellerBrowser", "Profiles", profileId);
-
-        Directory.CreateDirectory(cachePath);
     }
 }

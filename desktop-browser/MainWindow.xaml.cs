@@ -11,7 +11,7 @@ namespace MadsjeezSellerBrowser;
 
 public partial class MainWindow : Window
 {
-    private readonly SettingsService _settingsService = new();
+    private readonly SettingsService _settingsService;
     private readonly ApiService _apiService;
     private List<BrowserProfile> _profiles = new();
     private BrowserProfile? _activeProfile;
@@ -22,15 +22,18 @@ public partial class MainWindow : Window
     private readonly List<DownloadEntry> _downloads = new();
     private readonly List<AiMessage> _aiMessages = new();
 
-    public MainWindow()
+    public MainWindow(SettingsService settings, ApiService api)
     {
+        _settingsService = settings;
+        _apiService = api;
         InitializeComponent();
-        _apiService = new ApiService(_settingsService);
         Loaded += MainWindow_Loaded;
     }
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+        await SyncFromApiAsync();
+
         _profiles = _settingsService.LoadProfiles();
         if (_profiles.Count == 0)
             _profiles = SettingsService.GetDefaultProfiles();
@@ -44,14 +47,55 @@ public partial class MainWindow : Window
 
         ApplyProfile(_activeProfile);
         SetupBrowserEvents();
+        await LoadFavoritesAsync();
 
         if (!_settingsService.Settings.SidebarOpen)
             ToggleSidebar(false);
 
+        Title = $"Madsjeez Seller Browser — {_settingsService.Settings.UserEmail}";
         _ = _apiService.TrackTelemetryAsync("app_started");
         _ = CheckUpdatesAsync();
 
         AddAiMessage(false, "¡Hola! Soy Madsjeez AI, tu asistente para vender online. Selecciona una acción rápida o escribe tu consulta.");
+    }
+
+    private async Task SyncFromApiAsync()
+    {
+        var workspaces = await _apiService.GetWorkspacesAsync();
+        if (workspaces.Count == 0) return;
+
+        var basePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "MadsjeezSellerBrowser", "Profiles");
+
+        _profiles = workspaces.Select(w => new BrowserProfile
+        {
+            Id = w.Id,
+            WorkspaceId = w.Id,
+            Name = w.Name,
+            Slug = w.Slug,
+            Color = w.Color,
+            StartupUrls = w.StartupUrls?.Count > 0 ? w.StartupUrls : new List<string> { _settingsService.Settings.HomePage },
+            CachePath = Path.Combine(basePath, w.Slug),
+        }).ToList();
+
+        _settingsService.SaveProfiles(_profiles);
+
+        var defaultWs = workspaces.FirstOrDefault(w => w.IsDefault) ?? workspaces.First();
+        _settingsService.Settings.ActiveWorkspaceId = defaultWs.Id;
+        _settingsService.Settings.ActiveProfileId = defaultWs.Id;
+        _settingsService.Save();
+    }
+
+    private async Task LoadFavoritesAsync()
+    {
+        _favorites.Clear();
+        var workspaceId = _activeProfile?.WorkspaceId ?? _settingsService.Settings.ActiveWorkspaceId;
+        var items = await _apiService.GetFavoritesAsync(workspaceId);
+        foreach (var f in items)
+        {
+            _favorites.Add(new FavoriteEntry { Id = f.Id, Title = f.Title, Url = f.Url });
+        }
     }
 
     private void SetupBrowserEvents()
@@ -96,11 +140,18 @@ public partial class MainWindow : Window
     {
         _activeProfile = profile;
         _settingsService.Settings.ActiveProfileId = profile.Id;
+        _settingsService.Settings.ActiveWorkspaceId = profile.WorkspaceId ?? profile.Id;
         _settingsService.SaveProfiles(_profiles);
         _settingsService.Save();
 
         Directory.CreateDirectory(profile.CachePath);
-        CefSharpInitializer.SetProfileCachePath(profile.Slug);
+
+        var rcSettings = new RequestContextSettings
+        {
+            CachePath = profile.CachePath,
+            PersistSessionCookies = true,
+        };
+        WebBrowser.RequestContext = new RequestContext(rcSettings);
 
         _tabs.Clear();
         TabBar.Children.Clear();
@@ -110,6 +161,8 @@ public partial class MainWindow : Window
 
         if (_tabs.Count == 0)
             CreateTab(_settingsService.Settings.HomePage);
+
+        _ = LoadFavoritesAsync();
     }
 
     private void CreateTab(string url)
@@ -258,11 +311,21 @@ public partial class MainWindow : Window
         return input;
     }
 
-    private void BookmarkBtn_Click(object sender, RoutedEventArgs e)
+    private async void BookmarkBtn_Click(object sender, RoutedEventArgs e)
     {
         if (_activeTab == null) return;
-        _favorites.Add(new FavoriteEntry { Title = _activeTab.Title, Url = _activeTab.Url });
-        StatusText.Text = "Favorito agregado";
+        var workspaceId = _activeProfile?.WorkspaceId ?? _settingsService.Settings.ActiveWorkspaceId;
+        var created = await _apiService.CreateFavoriteAsync(_activeTab.Title, _activeTab.Url, workspaceId);
+        if (created != null)
+        {
+            _favorites.Add(new FavoriteEntry { Id = created.Id, Title = created.Title, Url = created.Url });
+            StatusText.Text = "Favorito guardado en la nube";
+        }
+        else
+        {
+            _favorites.Add(new FavoriteEntry { Title = _activeTab.Title, Url = _activeTab.Url });
+            StatusText.Text = "Favorito guardado localmente";
+        }
     }
 
     private void FavoritesBtn_Click(object sender, RoutedEventArgs e)
@@ -273,7 +336,9 @@ public partial class MainWindow : Window
             return;
         }
         var list = string.Join("\n", _favorites.Select(f => $"• {f.Title}\n  {f.Url}"));
-        MessageBox.Show(list, "Favoritos", MessageBoxButton.OK, MessageBoxImage.Information);
+        var result = MessageBox.Show(list + "\n\n¿Abrir el primero?", "Favoritos", MessageBoxButton.YesNo, MessageBoxImage.Information);
+        if (result == MessageBoxResult.Yes && _favorites.Count > 0)
+            NavigateTo(_favorites[0].Url);
     }
 
     private void HistoryBtn_Click(object sender, RoutedEventArgs e)
@@ -325,9 +390,14 @@ public partial class MainWindow : Window
 
     private async Task CheckUpdatesAsync()
     {
-        var ok = await _apiService.CheckForUpdatesAsync("0.1.0");
-        if (!ok)
+        var update = await _apiService.CheckForUpdatesAsync("0.1.0");
+        if (update == null)
+        {
             StatusText.Text = "Modo offline - API no disponible";
+            return;
+        }
+        if (update.UpdateAvailable)
+            StatusText.Text = $"Actualización disponible: v{update.Version}";
     }
 
     // AI Actions

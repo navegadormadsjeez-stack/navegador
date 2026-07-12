@@ -40,6 +40,8 @@ public class SettingsService
             var encrypted = File.ReadAllBytes(_settingsPath);
             var json = Decrypt(encrypted);
             _settings = JsonConvert.DeserializeObject<AppSettings>(json) ?? new AppSettings();
+            if (_settings.ApiBaseUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase))
+                _settings.ApiBaseUrl = "https://navegador-production.up.railway.app/api/v1";
         }
         catch
         {

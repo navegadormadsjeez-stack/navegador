@@ -1,18 +1,22 @@
-import { StatCard } from '@/components/StatCard';
-import { fetchApi, DashboardStats } from '@/lib/api';
+'use client';
 
-async function getStats(): Promise<DashboardStats> {
-  const data = await fetchApi<DashboardStats>('/users/stats');
-  return data ?? {
+import { useEffect, useState } from 'react';
+import { StatCard } from '@/components/StatCard';
+import { DashboardStats, fetchApi } from '@/lib/api';
+
+export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     activeUsers: 0,
     proUsers: 0,
     aiRequestsToday: 0,
-  };
-}
+  });
 
-export default async function DashboardPage() {
-  const stats = await getStats();
+  useEffect(() => {
+    fetchApi<DashboardStats>('/users/stats').then((data) => {
+      if (data) setStats(data);
+    });
+  }, []);
 
   return (
     <div>
@@ -30,7 +34,7 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-slate-900 rounded-xl border border-slate-800 p-6">
-          <h2 className="text-lg font-semibold mb-4">Roadmap</h2>
+          <h2 className="text-lg font-semibold mb-4 text-white">Roadmap</h2>
           <div className="space-y-3">
             {[
               { phase: 'Fase 1', label: 'Navegador funcional', status: 'done' },
@@ -40,10 +44,15 @@ export default async function DashboardPage() {
               { phase: 'Fase 5', label: 'Automatizaciones', status: 'pending' },
             ].map((item) => (
               <div key={item.phase} className="flex items-center gap-3">
-                <span className={`w-2 h-2 rounded-full ${
-                  item.status === 'done' ? 'bg-green-500' :
-                  item.status === 'active' ? 'bg-indigo-500' : 'bg-slate-600'
-                }`} />
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    item.status === 'done'
+                      ? 'bg-green-500'
+                      : item.status === 'active'
+                        ? 'bg-indigo-500'
+                        : 'bg-slate-600'
+                  }`}
+                />
                 <span className="text-slate-400 text-sm w-16">{item.phase}</span>
                 <span className="text-white text-sm">{item.label}</span>
               </div>
@@ -52,21 +61,16 @@ export default async function DashboardPage() {
         </div>
 
         <div className="bg-slate-900 rounded-xl border border-slate-800 p-6">
-          <h2 className="text-lg font-semibold mb-4">Estado del sistema</h2>
+          <h2 className="text-lg font-semibold mb-4 text-white">Estado del sistema</h2>
           <div className="space-y-3">
             {[
               { service: 'API Backend', status: 'online' },
               { service: 'PostgreSQL', status: 'online' },
               { service: 'Redis', status: 'online' },
-              { service: 'Cloudflare R2', status: 'pending' },
             ].map((item) => (
               <div key={item.service} className="flex items-center justify-between">
                 <span className="text-slate-300">{item.service}</span>
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  item.status === 'online'
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'bg-yellow-500/20 text-yellow-400'
-                }`}>
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">
                   {item.status}
                 </span>
               </div>
