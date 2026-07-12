@@ -1,39 +1,47 @@
 import Link from 'next/link';
+import { APP_VERSION } from '@/lib/landing-content';
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-[#0a0a0f] py-12">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-yellow text-[#0a0a0f] font-display font-bold text-sm">
+    <footer className="border-t border-border py-12">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 sm:px-6 md:flex-row md:items-start md:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand font-display text-sm font-bold text-brand-foreground">
               M
             </span>
-            <div>
-              <p className="font-display font-semibold text-white text-sm">
-                Madsjeez Seller Browser
-              </p>
-              <p className="text-zinc-600 text-xs">v0.1.0</p>
-            </div>
+            <span className="font-display text-sm font-semibold text-foreground">
+              Madsjeez Seller Browser
+            </span>
           </div>
-
-          <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500">
-            <a href="#features" className="hover:text-white transition-colors">
-              Funciones
-            </a>
-            <Link href="/download" className="hover:text-white transition-colors">
-              Descargar
-            </Link>
-            <Link href="/login" className="hover:text-white transition-colors">
-              Admin
-            </Link>
-          </nav>
-
-          <p className="text-zinc-600 text-xs">
-            © {new Date().getFullYear()} Madsjeez
-          </p>
+          <p className="mt-2 text-xs text-muted">Versión {APP_VERSION}</p>
         </div>
+
+        <nav className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm sm:grid-cols-3" aria-label="Pie de página">
+          <Link href="/download" className="text-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
+            Descargar
+          </Link>
+          <Link href="/login" className="text-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
+            Admin
+          </Link>
+          <a href="#seguridad" className="text-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm">
+            Seguridad
+          </a>
+          <span className="text-muted/60 cursor-default" title="Próximamente">
+            Privacidad
+          </span>
+          <span className="text-muted/60 cursor-default" title="Próximamente">
+            Términos
+          </span>
+          <span className="text-muted/60 cursor-default" title="Próximamente">
+            Soporte
+          </span>
+        </nav>
       </div>
+
+      <p className="mx-auto mt-8 max-w-6xl px-4 text-center text-xs text-muted sm:px-6">
+        © {new Date().getFullYear()} Madsjeez
+      </p>
     </footer>
   );
 }

@@ -3,9 +3,28 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0f;
-  --foreground: #fafafa;
-  --brand-yellow: #ffe600;
+  --background: #0b0b10;
+  --foreground: #f4f4f5;
+  --surface: #12121a;
+  --muted: #a1a1aa;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --brand: #ffe600;
+  --brand-foreground: #0b0b10;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 html {
@@ -18,10 +37,6 @@ body {
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
   .font-display {
     font-family: var(--font-display), system-ui, sans-serif;
   }
@@ -29,37 +44,30 @@ body {
   .font-body {
     font-family: var(--font-body), system-ui, sans-serif;
   }
-
-  .animate-fade-up {
-    animation: fade-up 0.8s ease-out both;
-  }
-
-  .animation-delay-200 {
-    animation-delay: 0.2s;
-  }
-
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
 }
 
-@keyframes fade-up {
+@keyframes accordion-down {
   from {
-    opacity: 0;
-    transform: translateY(24px);
+    height: 0;
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    height: var(--radix-accordion-content-height);
   }
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
   }
-  50% {
-    transform: translateY(-12px);
+  to {
+    height: 0;
   }
+}
+
+.animate-accordion-down {
+  animation: accordion-down 0.2s ease-out;
+}
+
+.animate-accordion-up {
+  animation: accordion-up 0.2s ease-out;
 }

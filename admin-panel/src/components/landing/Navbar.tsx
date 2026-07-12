@@ -3,103 +3,93 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { clsx } from 'clsx';
+import { cn } from '@/lib/utils';
+import { NAV_LINKS } from '@/lib/landing-content';
 import { DownloadButton } from './DownloadButton';
-
-const links = [
-  { href: '#features', label: 'Funciones' },
-  { href: '#profiles', label: 'Perfiles' },
-  { href: '#ai', label: 'IA' },
-  { href: '#download', label: 'Descargar' },
-];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
   return (
     <header
-      className={clsx(
-        'fixed top-0 inset-x-0 z-50 transition-all duration-300',
+      className={cn(
+        'fixed inset-x-0 top-0 z-50 transition-all duration-300',
         scrolled
-          ? 'bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20'
+          ? 'border-b border-border bg-background/75 backdrop-blur-xl'
           : 'bg-transparent',
       )}
     >
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-yellow to-amber-400 text-[#0a0a0f] font-display font-bold text-lg shadow-lg shadow-brand-yellow/20 group-hover:scale-105 transition-transform">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand font-display text-sm font-bold text-brand-foreground">
             M
           </span>
-          <span className="font-display font-semibold text-white tracking-tight hidden sm:block">
+          <span className="font-display text-sm font-semibold tracking-tight text-foreground">
             Madsjeez
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
-          {links.map(({ href, label }) => (
+        <nav className="hidden items-center gap-8 md:flex" aria-label="Principal">
+          {NAV_LINKS.map(({ href, label }) => (
             <a
               key={href}
               href={href}
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
+              className="text-sm text-muted transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-sm"
             >
               {label}
             </a>
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm text-zinc-400 hover:text-white transition-colors px-3 py-2"
-          >
-            Admin
-          </Link>
-          <DownloadButton variant="nav" label="Descargar gratis" showIcon={false} />
+        <div className="hidden md:block">
+          <DownloadButton variant="nav" label="Descargar" showIcon={false} />
         </div>
 
         <button
           type="button"
-          className="md:hidden text-zinc-400 hover:text-white p-2"
+          className="rounded-lg p-2 text-muted hover:text-foreground md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
           onClick={() => setOpen(!open)}
-          aria-label="Menú"
+          aria-expanded={open}
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-white/5 bg-[#0a0a0f]/95 backdrop-blur-xl px-6 py-4 space-y-1">
-          {links.map(({ href, label }) => (
-            <a
-              key={href}
-              href={href}
-              onClick={() => setOpen(false)}
-              className="block py-3 text-zinc-300 hover:text-white"
-            >
-              {label}
-            </a>
-          ))}
-          <Link
-            href="/login"
-            onClick={() => setOpen(false)}
-            className="block py-3 text-zinc-400"
-          >
-            Admin
-          </Link>
-          <DownloadButton
-            variant="primary"
-            label="Descargar gratis"
-            showIcon={false}
-            className="block mt-2 text-center w-full justify-center"
-          />
+        <div className="border-t border-border bg-background/95 backdrop-blur-xl md:hidden">
+          <nav className="mx-auto flex max-w-6xl flex-col px-4 py-4" aria-label="Móvil">
+            {NAV_LINKS.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={() => setOpen(false)}
+                className="border-b border-border py-3 text-sm text-muted last:border-b-0 hover:text-foreground"
+              >
+                {label}
+              </a>
+            ))}
+            <DownloadButton
+              variant="primary"
+              label="Descargar gratis"
+              className="mt-4 w-full justify-center"
+            />
+          </nav>
         </div>
       )}
     </header>
