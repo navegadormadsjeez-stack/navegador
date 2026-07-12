@@ -16,13 +16,13 @@ import { clearAuth, getEmail } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/users', label: 'Usuarios', icon: Users },
-  { href: '/plans', label: 'Planes', icon: CreditCard },
-  { href: '/ai', label: 'Consumo IA', icon: Brain },
-  { href: '/updates', label: 'Versiones', icon: Download },
-  { href: '/announcements', label: 'Anuncios', icon: Megaphone },
-  { href: '/stats', label: 'Estadísticas', icon: BarChart3 },
+  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin/users', label: 'Usuarios', icon: Users },
+  { href: '/admin/plans', label: 'Planes', icon: CreditCard },
+  { href: '/admin/ai', label: 'Consumo IA', icon: Brain },
+  { href: '/admin/updates', label: 'Versiones', icon: Download },
+  { href: '/admin/announcements', label: 'Anuncios', icon: Megaphone },
+  { href: '/admin/stats', label: 'Estadísticas', icon: BarChart3 },
 ];
 
 export function Sidebar() {

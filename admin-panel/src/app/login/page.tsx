@@ -23,7 +23,7 @@ export default function LoginPage() {
       return;
     }
     saveAuth(result.accessToken, result.refreshToken, result.user.email);
-    router.replace('/');
+    router.replace('/admin');
   }
 
   return (
@@ -68,6 +68,11 @@ export default function LoginPage() {
 
         <p className="text-slate-500 text-xs text-center mt-6">
           Demo: admin@madsjeez.com / Admin123!
+        </p>
+        <p className="text-center mt-4">
+          <a href="/" className="text-slate-500 hover:text-slate-300 text-xs">
+            ← Volver al inicio
+          </a>
         </p>
       </form>
     </div>
