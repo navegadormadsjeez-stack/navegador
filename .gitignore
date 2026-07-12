@@ -22,6 +22,7 @@ Thumbs.db
 # Build
 bin/
 obj/
+*.tsbuildinfo
 *.user
 *.suo
 

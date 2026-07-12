@@ -9,7 +9,7 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 RUN npx prisma generate
-RUN npm run build
+RUN rm -f tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo && npm run build
 
 FROM node:22-alpine AS runner
 
