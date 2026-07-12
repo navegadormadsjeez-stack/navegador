@@ -12,7 +12,12 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const url = config.get<string>('REDIS_URL', 'redis://localhost:6379');
-        return new Redis(url, { maxRetriesPerRequest: 3 });
+        return new Redis(url, {
+          maxRetriesPerRequest: 3,
+          lazyConnect: true,
+          enableOfflineQueue: false,
+          retryStrategy: (times) => Math.min(times * 200, 2000),
+        });
       },
     },
   ],

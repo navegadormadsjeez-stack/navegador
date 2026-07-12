@@ -7,7 +7,8 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  try {
+    const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 
   app.use(helmet());
@@ -38,5 +39,9 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
   console.log(`Madsjeez API running on port ${port}`);
   console.log(`Swagger docs: /api/docs`);
+  } catch (error) {
+    console.error('Failed to start Madsjeez API:', error);
+    process.exit(1);
+  }
 }
 bootstrap();
