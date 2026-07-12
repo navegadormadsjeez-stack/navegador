@@ -3,7 +3,7 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "npx prisma db push && node prisma/seed-prod.js && node dist/main.js"
+startCommand = "sh -c 'npx prisma db push; node prisma/seed-prod.js || true; exec node dist/main.js'"
 healthcheckPath = "/api/v1/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
