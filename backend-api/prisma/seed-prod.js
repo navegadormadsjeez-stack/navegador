@@ -73,9 +73,9 @@ async function main() {
       description:
         'Initial release with browser, workspaces, AI sidebar, and product management.',
       downloadUrl:
-        'https://updates.madsjeez.com/releases/0.1.0/MadsjeezSellerBrowser-setup.exe',
-      checksum: 'sha256:placeholder',
-      fileSize: BigInt(85000000),
+        'https://files.catbox.moe/duyrzt.zip',
+      checksum: 'sha256:eef08900cb340a09acb668244d513aff1784458a1a8c12d15e60f73afe203d9b',
+      fileSize: BigInt(144720011),
       channel: 'STABLE',
     },
   });

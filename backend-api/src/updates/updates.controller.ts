@@ -24,6 +24,11 @@ export class UpdatesController {
     return this.updatesService.checkUpdate(version || '0.0.0');
   }
 
+  @Get('latest')
+  getLatestDownload() {
+    return this.updatesService.getLatestDownload();
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()

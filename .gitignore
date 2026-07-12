@@ -36,6 +36,11 @@ backend-api/prisma/migrations/**/migration_lock.toml
 
 # CefSharp
 desktop-browser/cefsharp/
+desktop-browser/publish/
+desktop-browser/release/
+downloads-host/*.zip
+
+# Downloads host (ZIP uploaded separately to Railway/CDN)
 
 # Test
 coverage/

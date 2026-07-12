@@ -1,0 +1,36 @@
+MADSJEEZ SELLER BROWSER v0.1.0
+================================
+
+El navegador diseñado para vendedores online de Latinoamérica.
+
+INSTALACION RAPIDA
+------------------
+1. Extrae este ZIP en una carpeta (ej: Descargas\MadsjeezSellerBrowser)
+2. Doble clic en "Instalar.bat" para instalar con acceso directo
+   O ejecuta directamente "MadsjeezSellerBrowser.exe" (portable)
+
+INICIAR SESION
+--------------
+Demo admin:  admin@madsjeez.com / Admin123!
+O crea tu cuenta nueva desde la pantalla de login.
+
+REQUISITOS
+----------
+- Windows 10 o 11 (64 bits)
+- Conexion a Internet
+- .NET 8 Desktop Runtime (x64) - descarga gratis en:
+  https://dotnet.microsoft.com/download/dotnet/8.0
+  (busca "Desktop Runtime" para Windows x64)
+
+CARACTERISTICAS
+---------------
+- Perfiles de trabajo (Maqjeez, Materia Natural, etc.)
+- Favoritos sincronizados en la nube
+- Gestion de productos
+- Asistente IA para vendedores
+- Cache aislado por perfil
+
+SOPORTE
+-------
+API: https://navegador-production.up.railway.app
+Admin: https://admin-panel-production-b4e5.up.railway.app

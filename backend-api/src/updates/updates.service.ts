@@ -6,6 +6,27 @@ import { CreateUpdateDto } from './dto/create-update.dto';
 export class UpdatesService {
   constructor(private prisma: PrismaService) {}
 
+  async getLatestDownload() {
+    const latest = await this.prisma.appUpdate.findFirst({
+      where: { channel: 'STABLE' },
+      orderBy: { publishedAt: 'desc' },
+    });
+
+    if (!latest) {
+      return { available: false };
+    }
+
+    return {
+      available: true,
+      version: latest.version,
+      title: latest.title,
+      description: latest.description,
+      downloadUrl: latest.downloadUrl,
+      checksum: latest.checksum,
+      fileSize: Number(latest.fileSize),
+    };
+  }
+
   async checkUpdate(currentVersion: string) {
     const latest = await this.prisma.appUpdate.findFirst({
       where: { channel: 'STABLE' },

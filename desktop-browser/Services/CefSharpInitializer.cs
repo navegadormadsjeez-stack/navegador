@@ -23,4 +23,6 @@ public static class CefSharpInitializer
         Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
         _initialized = true;
     }
+
+    public static bool IsInitialized => _initialized;
 }

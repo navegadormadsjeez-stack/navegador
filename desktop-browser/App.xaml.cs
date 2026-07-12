@@ -11,7 +11,20 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        CefSharpInitializer.Initialize();
+        try
+        {
+            CefSharpInitializer.Initialize();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"No se pudo iniciar el motor del navegador (Chromium).\n\n{ex.Message}\n\nReinstala la aplicación o ejecuta como administrador.",
+                "Madsjeez Seller Browser",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            Shutdown(1);
+            return;
+        }
 
         var settings = new SettingsService();
         var api = new ApiService(settings);
