@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+dist/
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+bin/
+obj/
+*.user
+*.suo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Prisma
+backend-api/prisma/migrations/**/migration_lock.toml
+
+# CefSharp
+desktop-browser/cefsharp/
+
+# Test
+coverage/
