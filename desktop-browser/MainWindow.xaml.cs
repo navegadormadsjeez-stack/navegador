@@ -36,6 +36,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         NewTabView.NavigateRequested += (_, url) => NavigateTo(url);
         NewTabView.AiAssistRequested += (_, _) => ToggleSidebar(true);
+        ExtensionsView.ToolRequested += (_, tool) => HandleExtensionTool(tool);
         SettingsView.LogoutRequested += (_, _) => HandleLogout();
         SettingsView.SaveRequested += (_, _) => HandleSaveSettings();
         SettingsView.ClearHistoryRequested += (_, _) => HandleClearHistory();
@@ -153,6 +154,7 @@ public partial class MainWindow : Window
     {
         NewTabView.Visibility = Visibility.Visible;
         SettingsView.Visibility = Visibility.Collapsed;
+        ExtensionsView.Visibility = Visibility.Collapsed;
         WebBrowser.Visibility = Visibility.Collapsed;
     }
 
@@ -161,6 +163,15 @@ public partial class MainWindow : Window
         RefreshSettingsPage();
         NewTabView.Visibility = Visibility.Collapsed;
         SettingsView.Visibility = Visibility.Visible;
+        ExtensionsView.Visibility = Visibility.Collapsed;
+        WebBrowser.Visibility = Visibility.Collapsed;
+    }
+
+    private void ShowExtensionsPage()
+    {
+        NewTabView.Visibility = Visibility.Collapsed;
+        SettingsView.Visibility = Visibility.Collapsed;
+        ExtensionsView.Visibility = Visibility.Visible;
         WebBrowser.Visibility = Visibility.Collapsed;
     }
 
@@ -168,6 +179,7 @@ public partial class MainWindow : Window
     {
         NewTabView.Visibility = Visibility.Collapsed;
         SettingsView.Visibility = Visibility.Collapsed;
+        ExtensionsView.Visibility = Visibility.Collapsed;
         WebBrowser.Visibility = Visibility.Visible;
     }
 
@@ -471,12 +483,24 @@ public partial class MainWindow : Window
     private void NavSocialBtn_Click(object sender, RoutedEventArgs e) =>
         NavigateTo("https://web.whatsapp.com");
 
-    private void NavExtensionsBtn_Click(object sender, RoutedEventArgs e) =>
-        MessageBox.Show(
-            "Las extensiones de Chrome no están disponibles en esta versión.\n\nMadsjeez usa Chromium embebido (CefSharp) sin tienda de extensiones.",
-            "Extensiones",
-            MessageBoxButton.OK,
-            MessageBoxImage.Information);
+    private void NavExtensionsBtn_Click(object sender, RoutedEventArgs e) => ShowExtensionsPage();
+
+    private void HandleExtensionTool(string tool)
+    {
+        switch (tool)
+        {
+            case "ai":
+                ToggleSidebar(true);
+                break;
+            case "publish":
+            case "tools":
+                ProductsBtn_Click(this, new RoutedEventArgs());
+                break;
+            case "updates":
+                _ = HandleCheckUpdatesAsync(promptInstall: true);
+                break;
+        }
+    }
 
     private void NavSettingsBtn_Click(object sender, RoutedEventArgs e) => ShowSettingsPage();
 
