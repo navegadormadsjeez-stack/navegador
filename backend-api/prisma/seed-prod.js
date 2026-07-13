@@ -65,24 +65,24 @@ async function main() {
   });
 
   await prisma.appUpdate.upsert({
-    where: { version: '0.1.12' },
+    where: { version: '0.1.13' },
     update: {
-      title: 'Madsjeez Seller Browser v0.1.12',
+      title: 'Madsjeez Seller Browser v0.1.13',
       description:
         'Nueva pantalla de Extensiones y herramientas integradas; reemplaza el popup de extensiones no disponibles.',
       downloadUrl:
-        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.12/MadsjeezSellerBrowserSetup.exe',
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.13/MadsjeezSellerBrowserSetup.exe',
       checksum: 'sha256:pending',
       fileSize: BigInt(155414269),
       channel: 'STABLE',
     },
     create: {
-      version: '0.1.12',
-      title: 'Madsjeez Seller Browser v0.1.12',
+      version: '0.1.13',
+      title: 'Madsjeez Seller Browser v0.1.13',
       description:
         'Nueva pantalla de Extensiones y herramientas integradas; reemplaza el popup de extensiones no disponibles.',
       downloadUrl:
-        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.12/MadsjeezSellerBrowserSetup.exe',
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.13/MadsjeezSellerBrowserSetup.exe',
       checksum: 'sha256:pending',
       fileSize: BigInt(155414269),
       channel: 'STABLE',

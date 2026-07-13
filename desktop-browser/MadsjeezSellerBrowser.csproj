@@ -8,9 +8,9 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>MadsjeezSellerBrowser</AssemblyName>
     <RootNamespace>MadsjeezSellerBrowser</RootNamespace>
-    <Version>0.1.12</Version>
-    <FileVersion>0.1.12.0</FileVersion>
-    <InformationalVersion>0.1.12</InformationalVersion>
+    <Version>0.1.13</Version>
+    <FileVersion>0.1.13.0</FileVersion>
+    <InformationalVersion>0.1.13</InformationalVersion>
     <Product>Madsjeez Seller Browser</Product>
     <Company>Madsjeez</Company>
     <Description>Navegador para vendedores online de Latinoamerica</Description>
