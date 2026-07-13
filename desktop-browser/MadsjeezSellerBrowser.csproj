@@ -8,9 +8,9 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>MadsjeezSellerBrowser</AssemblyName>
     <RootNamespace>MadsjeezSellerBrowser</RootNamespace>
-    <Version>0.1.14</Version>
-    <FileVersion>0.1.14.0</FileVersion>
-    <InformationalVersion>0.1.14</InformationalVersion>
+    <Version>0.1.15</Version>
+    <FileVersion>0.1.15.0</FileVersion>
+    <InformationalVersion>0.1.15</InformationalVersion>
     <Product>Madsjeez Seller Browser</Product>
     <Company>Madsjeez</Company>
     <Description>Navegador para vendedores online de Latinoamerica</Description>
@@ -36,6 +36,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Assets\app-icon.png" />
+    <Resource Include="Assets\app.ico" />
   </ItemGroup>
 
   <ItemGroup>

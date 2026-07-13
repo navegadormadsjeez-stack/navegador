@@ -8,7 +8,7 @@
         ResizeMode="NoResize"
         ShowInTaskbar="True"
         Topmost="True"
-        Icon="Assets/app.ico"
+        Icon="/Assets/app.ico"
         Background="#0D1220">
     <Border BorderBrush="#253049" BorderThickness="1" CornerRadius="16" Margin="1">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="32">

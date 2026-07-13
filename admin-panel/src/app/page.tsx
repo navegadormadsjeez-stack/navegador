@@ -6,7 +6,7 @@ export const revalidate = 0;
 
 export default async function HomePage() {
   const info = await fetchDownloadInfo();
-  const version = info.version ?? '0.1.14';
+  const version = info.version ?? '0.1.15';
 
   return <LandingPremiumPage version={version} />;
 }

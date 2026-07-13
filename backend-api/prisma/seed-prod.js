@@ -65,6 +65,31 @@ async function main() {
   });
 
   await prisma.appUpdate.upsert({
+    where: { version: '0.1.15' },
+    update: {
+      title: 'Madsjeez Seller Browser v0.1.15',
+      description:
+        'Fix arranque: icono app.ico embebido correctamente (splash y ventanas ya no fallan al abrir).',
+      downloadUrl:
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.15/MadsjeezSellerBrowserSetup.exe',
+      checksum: 'sha256:pending',
+      fileSize: BigInt(155906867),
+      channel: 'STABLE',
+    },
+    create: {
+      version: '0.1.15',
+      title: 'Madsjeez Seller Browser v0.1.15',
+      description:
+        'Fix arranque: icono app.ico embebido correctamente (splash y ventanas ya no fallan al abrir).',
+      downloadUrl:
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.15/MadsjeezSellerBrowserSetup.exe',
+      checksum: 'sha256:pending',
+      fileSize: BigInt(155906867),
+      channel: 'STABLE',
+    },
+  });
+
+  await prisma.appUpdate.upsert({
     where: { version: '0.1.14' },
     update: {
       title: 'Madsjeez Seller Browser v0.1.14',
