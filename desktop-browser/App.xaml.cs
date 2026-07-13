@@ -103,7 +103,8 @@ public partial class App : Application
             }
 
             splash.SetStatus("Abriendo ventana...");
-            var mainWindow = new MainWindow(settings, api);
+            var startupUrl = StartupArgumentResolver.ResolveFirst(e.Args);
+            var mainWindow = new MainWindow(settings, api, startupUrl);
             MainWindow = mainWindow;
             mainWindow.Show();
             splash.Close();

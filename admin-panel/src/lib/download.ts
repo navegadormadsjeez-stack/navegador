@@ -3,7 +3,7 @@ export const API_URL =
 
 export const FALLBACK_DOWNLOAD_URL =
   process.env.NEXT_PUBLIC_DOWNLOAD_URL ||
-  'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.13/MadsjeezSellerBrowserSetup.exe';
+  'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.14/MadsjeezSellerBrowserSetup.exe';
 
 export const DOWNLOAD_FILENAME = 'MadsjeezSellerBrowserSetup.exe';
 
@@ -54,9 +54,9 @@ export async function fetchDownloadInfo(): Promise<DownloadInfo> {
   }
   return {
     available: true,
-    version: '0.1.13',
-    title: 'Madsjeez Seller Browser v0.1.13',
+    version: '0.1.14',
+    title: 'Madsjeez Seller Browser v0.1.14',
     downloadUrl: FALLBACK_DOWNLOAD_URL,
-    fileSize: 155414269,
+    fileSize: 155906867,
   };
 }

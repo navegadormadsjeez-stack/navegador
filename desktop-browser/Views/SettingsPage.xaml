@@ -104,6 +104,23 @@
                 </StackPanel>
             </Border>
 
+            <!-- Windows -->
+            <TextBlock Text="Windows" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>
+            <Border Style="{StaticResource GlassPanel}" Padding="18" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="Navegador predeterminado"
+                               Foreground="{StaticResource TextPrimaryBrush}" FontSize="13" FontWeight="SemiBold"/>
+                    <TextBlock Text="Windows no permite cambiar el navegador predeterminado automáticamente. Usá el botón para abrir Configuración y elegir MadsJeez como navegador web."
+                               Foreground="{StaticResource TextMutedBrush}" FontSize="12"
+                               TextWrapping="Wrap" Margin="0,6,0,12"/>
+                    <Button Content="Elegir MadsJeez como navegador predeterminado"
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left" Width="320"
+                            Click="OpenDefaultAppsBtn_Click"/>
+                </StackPanel>
+            </Border>
+
             <!-- Acerca de -->
             <TextBlock Text="Acerca de" FontSize="13" FontWeight="SemiBold"
                        Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,10"/>

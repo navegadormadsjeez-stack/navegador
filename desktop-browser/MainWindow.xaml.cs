@@ -28,11 +28,13 @@ public partial class MainWindow : Window
     private bool _initializing;
     private string? _pendingUpdateUrl;
     private string? _pendingUpdateVersion;
+    private readonly string? _startupArgument;
 
-    public MainWindow(SettingsService settings, ApiService api)
+    public MainWindow(SettingsService settings, ApiService api, string? startupArgument = null)
     {
         _settingsService = settings;
         _apiService = api;
+        _startupArgument = startupArgument;
         InitializeComponent();
         NewTabView.NavigateRequested += (_, url) => NavigateTo(url);
         NewTabView.AiAssistRequested += (_, _) => ToggleSidebar(true);
@@ -44,6 +46,7 @@ public partial class MainWindow : Window
         SettingsView.NavigateRequested += (_, url) => NavigateTo(url);
         SettingsView.CheckUpdatesRequested += (_, _) => _ = HandleCheckUpdatesAsync(promptInstall: true);
         SettingsView.InstallUpdateRequested += (_, _) => _ = HandleInstallUpdateAsync();
+        SettingsView.OpenDefaultAppsRequested += (_, _) => HandleOpenDefaultApps();
         Loaded += MainWindow_Loaded;
         _statusTimer.Interval = TimeSpan.FromSeconds(2);
         _statusTimer.Tick += (_, _) => UpdateSystemStats();
@@ -86,6 +89,10 @@ public partial class MainWindow : Window
         _ = SyncStartupDataAsync();
         _ = _apiService.TrackTelemetryAsync("app_started");
         _ = CheckUpdatesAsync();
+
+        var startupUrl = StartupArgumentResolver.Resolve(_startupArgument);
+        if (!string.IsNullOrEmpty(startupUrl))
+            NavigateTo(startupUrl);
     }
 
     private async Task SyncStartupDataAsync()
@@ -173,6 +180,28 @@ public partial class MainWindow : Window
         SettingsView.Visibility = Visibility.Collapsed;
         ExtensionsView.Visibility = Visibility.Visible;
         WebBrowser.Visibility = Visibility.Collapsed;
+    }
+
+    private void NavExtensionsBtn_Click(object sender, RoutedEventArgs e) => ShowExtensionsPage();
+
+    private void HandleOpenDefaultApps()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "ms-settings:defaultapps",
+                UseShellExecute = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"No se pudo abrir Configuración de Windows:\n\n{ex.Message}\n\nAbrí manualmente: Configuración > Aplicaciones > Aplicaciones predeterminadas.",
+                "Madsjeez Seller Browser",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
     }
 
     private void HideInternalPages()
@@ -483,8 +512,6 @@ public partial class MainWindow : Window
     private void NavSocialBtn_Click(object sender, RoutedEventArgs e) =>
         NavigateTo("https://web.whatsapp.com");
 
-    private void NavExtensionsBtn_Click(object sender, RoutedEventArgs e) => ShowExtensionsPage();
-
     private void HandleExtensionTool(string tool)
     {
         switch (tool)
@@ -613,6 +640,12 @@ public partial class MainWindow : Window
     {
         input = input.Trim();
         if (string.IsNullOrEmpty(input)) return "about:blank";
+
+        if (input.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
+            return input;
+
+        if (File.Exists(input))
+            return new Uri(Path.GetFullPath(input)).AbsoluteUri;
 
         if (QuickSites.TryGetValue(input, out var direct))
             return direct;

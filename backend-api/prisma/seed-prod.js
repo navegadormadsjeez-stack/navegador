@@ -65,6 +65,31 @@ async function main() {
   });
 
   await prisma.appUpdate.upsert({
+    where: { version: '0.1.14' },
+    update: {
+      title: 'Madsjeez Seller Browser v0.1.14',
+      description:
+        'Registro completo como navegador Windows (HKLM): aparece en Apps predeterminadas, abre URLs/archivos por argumento, boton para elegir navegador predeterminado.',
+      downloadUrl:
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.14/MadsjeezSellerBrowserSetup.exe',
+      checksum: 'sha256:7e0eaacd349974fc9a592620bfea83913ca2ba734980755c68b89d97c5cfa215',
+      fileSize: BigInt(155906867),
+      channel: 'STABLE',
+    },
+    create: {
+      version: '0.1.14',
+      title: 'Madsjeez Seller Browser v0.1.14',
+      description:
+        'Registro completo como navegador Windows (HKLM): aparece en Apps predeterminadas, abre URLs/archivos por argumento, boton para elegir navegador predeterminado.',
+      downloadUrl:
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.14/MadsjeezSellerBrowserSetup.exe',
+      checksum: 'sha256:7e0eaacd349974fc9a592620bfea83913ca2ba734980755c68b89d97c5cfa215',
+      fileSize: BigInt(155906867),
+      channel: 'STABLE',
+    },
+  });
+
+  await prisma.appUpdate.upsert({
     where: { version: '0.1.13' },
     update: {
       title: 'Madsjeez Seller Browser v0.1.13',
@@ -72,8 +97,8 @@ async function main() {
         'Nueva pantalla de Extensiones y herramientas integradas; reemplaza el popup de extensiones no disponibles.',
       downloadUrl:
         'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.13/MadsjeezSellerBrowserSetup.exe',
-      checksum: 'sha256:pending',
-      fileSize: BigInt(155414269),
+      checksum: 'sha256:7e0eaacd349974fc9a592620bfea83913ca2ba734980755c68b89d97c5cfa215',
+      fileSize: BigInt(155906867),
       channel: 'STABLE',
     },
     create: {
@@ -83,8 +108,8 @@ async function main() {
         'Nueva pantalla de Extensiones y herramientas integradas; reemplaza el popup de extensiones no disponibles.',
       downloadUrl:
         'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.13/MadsjeezSellerBrowserSetup.exe',
-      checksum: 'sha256:pending',
-      fileSize: BigInt(155414269),
+      checksum: 'sha256:7e0eaacd349974fc9a592620bfea83913ca2ba734980755c68b89d97c5cfa215',
+      fileSize: BigInt(155906867),
       channel: 'STABLE',
     },
   });

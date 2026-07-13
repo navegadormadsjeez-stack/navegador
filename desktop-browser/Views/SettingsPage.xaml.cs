@@ -11,6 +11,7 @@ public partial class SettingsPage : UserControl
     public event EventHandler? ClearCacheRequested;
     public event EventHandler? CheckUpdatesRequested;
     public event EventHandler? InstallUpdateRequested;
+    public event EventHandler? OpenDefaultAppsRequested;
     public event EventHandler<string>? NavigateRequested;
 
     private string? _pendingUpdateUrl;
@@ -89,4 +90,7 @@ public partial class SettingsPage : UserControl
 
     private void InstallUpdateBtn_Click(object sender, RoutedEventArgs e) =>
         InstallUpdateRequested?.Invoke(this, EventArgs.Empty);
+
+    private void OpenDefaultAppsBtn_Click(object sender, RoutedEventArgs e) =>
+        OpenDefaultAppsRequested?.Invoke(this, EventArgs.Empty);
 }
