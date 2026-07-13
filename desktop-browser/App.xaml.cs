@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using CefSharp;
 using MadsjeezSellerBrowser.Services;
 using MadsjeezSellerBrowser.Views;
@@ -12,6 +13,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        var startupTimer = Stopwatch.StartNew();
         StartupLog.Write("Inicio de aplicación");
 
         _instanceMutex = new Mutex(true, SingleInstanceHelper.MutexName, out var isFirstInstance);
@@ -58,58 +60,60 @@ public partial class App : Application
             }
         };
 
+        SplashWindow? splash = null;
         try
         {
-            CefSharpInitializer.Initialize();
-            StartupLog.Write("CefSharp inicializado");
-        }
-        catch (Exception ex)
-        {
-            StartupLog.Write($"CefSharp falló: {ex}");
-            MessageBox.Show(
-                $"No se pudo iniciar el motor del navegador (Chromium).\n\n{ex.Message}\n\nReinstala la aplicación o ejecuta como administrador.",
-                "Madsjeez Seller Browser",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-            Shutdown(1);
-            return;
-        }
+            splash = new SplashWindow();
+            splash.Show();
+            splash.SetStatus("Preparando navegador...");
+            Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
 
-        try
-        {
+            var cefTimer = Stopwatch.StartNew();
+            CefSharpInitializer.Initialize();
+            StartupLog.Write($"CefSharp inicializado en {cefTimer.ElapsedMilliseconds}ms");
+
+            splash.SetStatus("Verificando sesión...");
             var settings = new SettingsService();
             var api = new ApiService(settings);
 
             if (string.IsNullOrEmpty(settings.Settings.AccessToken))
             {
                 StartupLog.Write("Mostrando login (sin token)");
+                splash.Hide();
                 if (!ShowLogin(settings, api))
                 {
                     StartupLog.Write("Login cancelado");
                     Shutdown();
                     return;
                 }
+                splash.Show();
             }
             else if (!api.IsAuthenticated)
             {
                 api.ClearAuth();
                 StartupLog.Write("Mostrando login (token inválido)");
+                splash.Hide();
                 if (!ShowLogin(settings, api))
                 {
                     StartupLog.Write("Login cancelado");
                     Shutdown();
                     return;
                 }
+                splash.Show();
             }
 
+            splash.SetStatus("Abriendo ventana...");
             var mainWindow = new MainWindow(settings, api);
             MainWindow = mainWindow;
             mainWindow.Show();
-            StartupLog.Write("Ventana principal abierta");
+            splash.Close();
+            splash = null;
+            StartupLog.Write($"Ventana principal abierta en {startupTimer.ElapsedMilliseconds}ms");
         }
         catch (Exception ex)
         {
-            StartupLog.Write($"Fallo al abrir ventana principal: {ex}");
+            splash?.Close();
+            StartupLog.Write($"Fallo al iniciar: {ex}");
             MessageBox.Show(
                 $"No se pudo abrir el navegador:\n\n{ex.Message}\n\nLog: %LOCALAPPDATA%\\MadsjeezSellerBrowser\\logs\\startup.log",
                 "Madsjeez Seller Browser",

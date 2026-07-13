@@ -52,8 +52,6 @@ public partial class MainWindow : Window
     {
         _initializing = true;
 
-        await SyncFromApiAsync();
-
         _profiles = _settingsService.LoadProfiles();
         if (_profiles.Count == 0)
             _profiles = SettingsService.GetDefaultProfiles();
@@ -66,8 +64,7 @@ public partial class MainWindow : Window
         ProfileComboBox.SelectedItem = _activeProfile;
 
         SetupBrowserEvents();
-        ApplyProfile(_activeProfile);
-        await LoadFavoritesAsync();
+        ApplyProfile(_activeProfile, fastStartup: true);
 
         _initializing = false;
 
@@ -78,16 +75,62 @@ public partial class MainWindow : Window
 
         _statusTimer.Start();
         UpdateSystemStats();
-        SyncStatusText.Text = string.IsNullOrEmpty(_settingsService.Settings.UserEmail)
-            ? "Sin sesión"
-            : "Sincronizado";
+        SyncStatusText.Text = "Sincronizando...";
+        StatusText.Text = "Iniciando...";
 
         Title = $"Madsjeez Seller Browser — {_settingsService.Settings.UserEmail}";
         VersionText.Text = $"v{UpdateInstallerService.GetAppVersion()}";
+        AddAiMessage(false, "Hola. Soy tu asistente para vender online. Elegí una acción rápida o escribí tu consulta.");
+
+        _ = SyncStartupDataAsync();
         _ = _apiService.TrackTelemetryAsync("app_started");
         _ = CheckUpdatesAsync();
+    }
 
-        AddAiMessage(false, "Hola. Soy tu asistente para vender online. Elegí una acción rápida o escribí tu consulta.");
+    private async Task SyncStartupDataAsync()
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        try
+        {
+            await SyncFromApiAsync(cts.Token);
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                ProfileComboBox.ItemsSource = null;
+                ProfileComboBox.ItemsSource = _profiles;
+                ProfileComboBox.DisplayMemberPath = "Name";
+                var activeId = _settingsService.Settings.ActiveProfileId;
+                _activeProfile = _profiles.FirstOrDefault(p => p.Id == activeId) ?? _profiles.First();
+                ProfileComboBox.SelectedItem = _activeProfile;
+            });
+
+            await LoadFavoritesAsync(cts.Token);
+            await Dispatcher.InvokeAsync(() =>
+            {
+                SyncStatusText.Text = string.IsNullOrEmpty(_settingsService.Settings.UserEmail)
+                    ? "Sin sesión"
+                    : "Sincronizado";
+                StatusText.Text = "Listo";
+            });
+        }
+        catch (OperationCanceledException)
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                SyncStatusText.Text = "Modo offline";
+                StatusText.Text = "Listo (sin sync)";
+            });
+            StartupLog.Write("Sync inicial cancelada por timeout");
+        }
+        catch (Exception ex)
+        {
+            StartupLog.Write($"Sync inicial falló: {ex.Message}");
+            await Dispatcher.InvokeAsync(() =>
+            {
+                SyncStatusText.Text = "Modo offline";
+                StatusText.Text = "Listo";
+            });
+        }
     }
 
     private void UpdateSystemStats()
@@ -141,9 +184,9 @@ public partial class MainWindow : Window
             UpdateInstallerService.GetAppVersion());
     }
 
-    private async Task SyncFromApiAsync()
+    private async Task SyncFromApiAsync(CancellationToken cancellationToken = default)
     {
-        var workspaces = await _apiService.GetWorkspacesAsync();
+        var workspaces = await _apiService.GetWorkspacesAsync(cancellationToken);
         if (workspaces.Count == 0) return;
 
         var basePath = Path.Combine(
@@ -169,11 +212,11 @@ public partial class MainWindow : Window
         _settingsService.Save();
     }
 
-    private async Task LoadFavoritesAsync()
+    private async Task LoadFavoritesAsync(CancellationToken cancellationToken = default)
     {
         _favorites.Clear();
         var workspaceId = _activeProfile?.WorkspaceId ?? _settingsService.Settings.ActiveWorkspaceId;
-        var items = await _apiService.GetFavoritesAsync(workspaceId);
+        var items = await _apiService.GetFavoritesAsync(workspaceId, cancellationToken);
         foreach (var f in items)
         {
             _favorites.Add(new FavoriteEntry { Id = f.Id, Title = f.Title, Url = f.Url });
@@ -219,7 +262,7 @@ public partial class MainWindow : Window
         WebBrowser.DownloadHandler = new BrowserDownloadHandler(_downloads, Dispatcher);
     }
 
-    private void ApplyProfile(BrowserProfile profile)
+    private void ApplyProfile(BrowserProfile profile, bool fastStartup = false)
     {
         var previousProfileId = _activeProfile?.Id;
         _activeProfile = profile;
@@ -246,6 +289,12 @@ public partial class MainWindow : Window
 
         _tabs.Clear();
         TabBar.Children.Clear();
+
+        if (fastStartup)
+        {
+            CreateTab("about:blank", showNewTab: true);
+            return;
+        }
 
         foreach (var url in profile.StartupUrls)
             CreateTab(url, showNewTab: false);

@@ -65,24 +65,24 @@ async function main() {
   });
 
   await prisma.appUpdate.upsert({
-    where: { version: '0.1.10' },
+    where: { version: '0.1.11' },
     update: {
-      title: 'Madsjeez Seller Browser v0.1.10',
+      title: 'Madsjeez Seller Browser v0.1.11',
       description:
-        'Corrige el arranque desde el icono: caché Cef dedicada, activar ventana existente y login visible.',
+        'Arranque más rápido: pantalla de carga, sync en segundo plano y timeout de API de 5s.',
       downloadUrl:
-        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.10/MadsjeezSellerBrowserSetup.exe',
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.11/MadsjeezSellerBrowserSetup.exe',
       checksum: 'sha256:pending',
       fileSize: BigInt(155414269),
       channel: 'STABLE',
     },
     create: {
-      version: '0.1.10',
-      title: 'Madsjeez Seller Browser v0.1.10',
+      version: '0.1.11',
+      title: 'Madsjeez Seller Browser v0.1.11',
       description:
-        'Corrige el arranque desde el icono: caché Cef dedicada, activar ventana existente y login visible.',
+        'Arranque más rápido: pantalla de carga, sync en segundo plano y timeout de API de 5s.',
       downloadUrl:
-        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.10/MadsjeezSellerBrowserSetup.exe',
+        'https://github.com/navegadormadsjeez-stack/navegador/releases/download/v0.1.11/MadsjeezSellerBrowserSetup.exe',
       checksum: 'sha256:pending',
       fileSize: BigInt(155414269),
       channel: 'STABLE',

@@ -16,7 +16,7 @@ public class ApiService
     public ApiService(SettingsService settings)
     {
         _settings = settings;
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(12) };
     }
 
     private string BaseUrl => _settings.Settings.ApiBaseUrl.TrimEnd('/');
@@ -33,10 +33,13 @@ public class ApiService
         }
     }
 
-    private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, bool retryOnUnauthorized = true)
+    private async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        bool retryOnUnauthorized = true,
+        CancellationToken cancellationToken = default)
     {
         SetAuth();
-        var response = await _http.SendAsync(request);
+        var response = await _http.SendAsync(request, cancellationToken);
 
         if (response.StatusCode == HttpStatusCode.Unauthorized && retryOnUnauthorized)
         {
@@ -44,7 +47,7 @@ public class ApiService
             {
                 SetAuth();
                 var retry = CloneRequest(request);
-                response = await _http.SendAsync(retry);
+                response = await _http.SendAsync(retry, cancellationToken);
             }
         }
 
@@ -139,14 +142,14 @@ public class ApiService
         _settings.Save();
     }
 
-    public async Task<List<ApiWorkspace>> GetWorkspacesAsync()
+    public async Task<List<ApiWorkspace>> GetWorkspacesAsync(CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/workspaces");
         try
         {
-            var response = await SendAsync(request);
+            var response = await SendAsync(request, cancellationToken: cancellationToken);
             if (!response.IsSuccessStatusCode) return new List<ApiWorkspace>();
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
             return JsonConvert.DeserializeObject<List<ApiWorkspace>>(json) ?? new List<ApiWorkspace>();
         }
         catch
@@ -215,7 +218,7 @@ public class ApiService
         }
     }
 
-    public async Task<List<ApiFavorite>> GetFavoritesAsync(string? workspaceId = null)
+    public async Task<List<ApiFavorite>> GetFavoritesAsync(string? workspaceId = null, CancellationToken cancellationToken = default)
     {
         var url = string.IsNullOrEmpty(workspaceId)
             ? $"{BaseUrl}/favorites"
@@ -223,9 +226,9 @@ public class ApiService
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         try
         {
-            var response = await SendAsync(request);
+            var response = await SendAsync(request, cancellationToken: cancellationToken);
             if (!response.IsSuccessStatusCode) return new List<ApiFavorite>();
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
             return JsonConvert.DeserializeObject<List<ApiFavorite>>(json) ?? new List<ApiFavorite>();
         }
         catch

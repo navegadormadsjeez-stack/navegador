@@ -29,7 +29,17 @@ public static class CefSharpInitializer
         settings.CefCommandLineArgs.Add("enable-media-stream", "1");
         settings.CefCommandLineArgs.Add("disable-features", "HardwareMediaKeyHandling");
 
-        Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
+        var depsOkMarker = Path.Combine(appDataRoot, ".cef-deps-verified");
+        var skipDependencyCheck = File.Exists(depsOkMarker);
+
+        Cef.Initialize(settings, performDependencyCheck: !skipDependencyCheck, browserProcessHandler: null);
+
+        if (!skipDependencyCheck)
+        {
+            try { File.WriteAllText(depsOkMarker, DateTime.UtcNow.ToString("O")); }
+            catch { /* ignore */ }
+        }
+
         _initialized = true;
     }
 
