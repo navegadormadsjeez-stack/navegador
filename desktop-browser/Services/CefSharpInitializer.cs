@@ -1,3 +1,4 @@
+using System.IO;
 using CefSharp;
 using CefSharp.Wpf;
 
@@ -11,10 +12,18 @@ public static class CefSharpInitializer
     {
         if (_initialized) return;
 
+        var appDataRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "MadsjeezSellerBrowser");
+        var cefRoot = Path.Combine(appDataRoot, "CefCache");
+        Directory.CreateDirectory(Path.Combine(cefRoot, "cache"));
+
         var settings = new CefSettings
         {
             LogSeverity = LogSeverity.Warning,
-            // User-Agent estándar Chromium/Chrome — evita bloqueos de Google por "tráfico inusual"
+            RootCachePath = cefRoot,
+            CachePath = Path.Combine(cefRoot, "cache"),
+            LogFile = Path.Combine(appDataRoot, "logs", "cef.log"),
         };
 
         settings.CefCommandLineArgs.Add("enable-media-stream", "1");

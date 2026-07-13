@@ -5,6 +5,8 @@
         Height="520" Width="420"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
+        Topmost="True"
+        ShowInTaskbar="True"
         Icon="Assets/app.ico"
         Background="#1a1a2e">
     <Grid Margin="32">

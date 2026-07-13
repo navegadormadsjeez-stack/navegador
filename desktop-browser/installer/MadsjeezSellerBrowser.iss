@@ -3,7 +3,7 @@
 ; Requiere publish en ..\publish\win-x64 (ver build-installer.ps1)
 
 #define MyAppName "Madsjeez Seller Browser"
-#define MyAppVersion "0.1.9"
+#define MyAppVersion "0.1.10"
 #define MyAppPublisher "Madsjeez"
 #define MyAppURL "https://admin-panel-production-b4e5.up.railway.app"
 #define MyAppExeName "MadsjeezSellerBrowser.exe"
@@ -39,7 +39,7 @@ UsePreviousAppDir=yes
 DisableDirPage=auto
 CloseApplications=force
 RestartApplications=yes
-AppMutex=MadsjeezSellerBrowser,{#MyAppExeName}
+AppMutex={#MyAppId},{#MyAppExeName}
 AllowNoIcons=yes
 Uninstallable=yes
 CreateUninstallRegKey=yes
